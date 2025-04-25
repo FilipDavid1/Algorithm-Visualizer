@@ -1,11 +1,13 @@
 package com.example.algorithmvisualizer.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,3 +46,29 @@ fun HomeScreen(navController: NavHostController) {
     }
 }
 
+@Composable
+fun DashedDivider(
+    color: Color = Color.LightGray,
+    strokeWidth: Float = 2f,
+    dashLength: Float = 10f,
+    gapLength: Float = 20f
+) {
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(strokeWidth.dp)
+    ) {
+        val totalWidth = size.width
+        var startX = 0f
+        while (startX < totalWidth) {
+            val endX = (startX + dashLength).coerceAtMost(totalWidth)
+            drawLine(
+                color = color,
+                start = androidx.compose.ui.geometry.Offset(x = startX, y = 0f),
+                end = androidx.compose.ui.geometry.Offset(x = endX, y = 0f),
+                strokeWidth = strokeWidth
+            )
+            startX += dashLength + gapLength
+        }
+    }
+}
