@@ -1,7 +1,9 @@
 package com.example.algorithmvisualizer.ui.sorting_alg
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,8 +43,15 @@ import com.example.algorithmvisualizer.ui.theme.WhiteText
 import com.example.algorithmvisualizer.ui.theme.YellowContainer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import com.example.algorithmvisualizer.ui.theme.yellowDropdownColors
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +61,37 @@ fun SortingListScreen() {
     val algorithms by viewModel.algorithms.collectAsState()
     var selectedAlgorithm by remember { mutableStateOf("Bubble Sort") }
     var expanded by remember { mutableStateOf(false) }
+
+    val unsortedData = remember { listOf(8,3,5,4,7,1,6,2) }
+    var currentData by remember { mutableStateOf(unsortedData) }
+    var highlightedIndices by remember { mutableStateOf(setOf<Int>()) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    fun bubbleSort(data: List<Int>) {
+        coroutineScope.launch {
+            var sortedData = data.toMutableList()
+            var n = sortedData.size
+            for (i in 0 until n) {
+                for (j in 0 until n - i - 1) {
+                    highlightedIndices = setOf(j, j + 1)
+
+                    delay(500)
+
+                    if (sortedData[j] > sortedData[j + 1]) {
+                        // Swap
+                        val temp = sortedData[j]
+                        sortedData[j] = sortedData[j + 1]
+                        sortedData[j + 1] = temp
+                    }
+
+                    currentData = sortedData
+                }
+            }
+            highlightedIndices = emptySet()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -99,7 +139,7 @@ fun SortingListScreen() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            /// Dropdown menu for algorithm selection
+            // Dropdown menu for algorithm selection
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
@@ -116,7 +156,7 @@ fun SortingListScreen() {
                     colors = yellowDropdownColors(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                        .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
                 )
 
                 // Dropdown menu options
@@ -138,6 +178,23 @@ fun SortingListScreen() {
                     }
                 }
             }
+
+            // Column Chart Visualization
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .padding(bottom = 16.dp),
+                colors = CardDefaults.cardColors(containerColor = BlueContainer)
+            ) {
+                ColumnChart(
+                    data = currentData,
+                    highlightedIndices = highlightedIndices,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                )
+            }
         }
 
         // Buttons
@@ -147,7 +204,9 @@ fun SortingListScreen() {
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = { /* Handle sort */ },
+                onClick = {
+                    bubbleSort(currentData)
+                },
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = YellowContainer,
@@ -179,6 +238,40 @@ fun SortingListScreen() {
                 modifier = Modifier.weight(1f)
             ) {
                 Text("STOP")
+            }
+        }
+    }
+}
+
+@Composable
+fun ColumnChart(
+    data: List<Int>,
+    highlightedIndices: Set<Int>,
+    modifier: Modifier = Modifier,
+    maxValue: Int = 10,
+    barColor: Color = WhiteText
+) {
+    Box(
+        contentAlignment = Alignment.BottomCenter,
+        modifier = modifier
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val barWidth = size.width / data.size - 8.dp.toPx()
+            val maxBarHeight = size.height * 0.9f
+
+            data.forEachIndexed { index, value ->
+                val barHeight = (value.toFloat() / maxValue) * maxBarHeight
+                val left = index * (barWidth + 8.dp.toPx()) + 4.dp.toPx()
+
+                val isHighlighted = index in highlightedIndices
+                val barColorToUse = if (isHighlighted) Color.Red else barColor
+
+                drawRect(
+                    color = barColorToUse,
+                    topLeft = Offset(left, size.height - barHeight),
+                    size = Size(barWidth, barHeight)
+                )
+
             }
         }
     }
