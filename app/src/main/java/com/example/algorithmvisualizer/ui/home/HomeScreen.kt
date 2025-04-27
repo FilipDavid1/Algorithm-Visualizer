@@ -1,7 +1,6 @@
-package com.example.algorithmvisualizer.ui.screens
+package com.example.algorithmvisualizer.ui.home
 
 import com.example.algorithmvisualizer.R
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.example.algorithmvisualizer.ui.theme.BlueContainer
 import com.example.algorithmvisualizer.ui.theme.WhiteText
 import com.example.algorithmvisualizer.ui.theme.YellowContainer
+import com.example.algorithmvisualizer.ui.utility.DashedDivider
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -210,33 +209,6 @@ fun AlgorithmCategoryCard(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun DashedDivider(
-    color: Color = Color.LightGray,
-    strokeWidth: Float = 2f,
-    dashLength: Float = 10f,
-    gapLength: Float = 20f
-) {
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(strokeWidth.dp)
-    ) {
-        val totalWidth = size.width
-        var startX = 0f
-        while (startX < totalWidth) {
-            val endX = (startX + dashLength).coerceAtMost(totalWidth)
-            drawLine(
-                color = color,
-                start = androidx.compose.ui.geometry.Offset(x = startX, y = 0f),
-                end = androidx.compose.ui.geometry.Offset(x = endX, y = 0f),
-                strokeWidth = strokeWidth
-            )
-            startX += dashLength + gapLength
         }
     }
 }
