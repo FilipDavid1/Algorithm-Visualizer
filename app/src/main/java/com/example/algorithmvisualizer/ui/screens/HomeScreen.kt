@@ -53,6 +53,24 @@ fun HomeScreen(navController: NavHostController) {
                 textAlign = TextAlign.Center
             )
         }
+
+
+        AlgorithmCategoryCard(
+            title = stringResource(R.string.sorting_algorithms_title),
+            description = stringResource(R.string.sorting_algorithms_desc),
+            count = 6,
+            icon = Icons.AutoMirrored.Filled.Sort,
+        ) { }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AlgorithmCategoryCard(
+            title = stringResource(R.string.searching_algorithms_title),
+            description = stringResource(R.string.searching_algorithms_desc),
+            count = 3,
+            iconOnRight = true,
+            icon = Icons.Default.Search,
+        ) { }
     }
 }
 
