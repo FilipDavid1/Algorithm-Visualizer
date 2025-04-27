@@ -1,5 +1,6 @@
 package com.example.algorithmvisualizer.ui.screens
 
+import com.example.algorithmvisualizer.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,7 @@ fun HomeScreen(navController: NavHostController) {
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             Text(
-                text = "Algorithm Visualizer",
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = WhiteText,
@@ -158,7 +159,7 @@ fun AlgorithmCategoryCard(
                     .padding(vertical = 12.dp)
             ) {
                 Text(
-                    text = "Number of available algorithms:",
+                    text = stringResource(R.string.number_of_algorithms),
                     style = MaterialTheme.typography.bodyMedium,
                     color = WhiteText
                 )
@@ -202,7 +203,7 @@ fun AlgorithmCategoryCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "SHOW",
+                        text = stringResource(R.string.show_button_text),
                         style = MaterialTheme.typography.labelLarge,
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold

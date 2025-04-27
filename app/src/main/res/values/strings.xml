@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Algorithm Visualizer</string>
+    <string name="sorting_algorithms_title">Sorting Algorithms</string>
+    <string name="sorting_algorithms_desc">Try different sorting algorithms and see how they work step by step.</string>
+    <string name="searching_algorithms_title">Searching Algorithms</string>
+    <string name="searching_algorithms_desc">Find values in arrays using efficient search methods.</string>
+    <string name="number_of_algorithms">Number of available algorithms:</string>
+    <string name="show_button_text">SHOW</string>
 </resources>
