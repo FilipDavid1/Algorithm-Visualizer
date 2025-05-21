@@ -63,7 +63,6 @@ class SortingListViewModel : ViewModel() {
     private fun startSorting() {
         sortingJob?.cancel()
         sortingJob = viewModelScope.launch {
-            _state.update { it.copy(isSorting = true) }
             _state.update { it.copy(isSorting = true, sortedIndices = emptySet()) }
             when (SortingAlgorithm.fromString(state.value.selectedAlgorithm)) {
                 is SortingAlgorithm.BubbleSort -> bubbleSort()
@@ -73,7 +72,6 @@ class SortingListViewModel : ViewModel() {
                 is SortingAlgorithm.QuickSort -> quickSort()
                 is SortingAlgorithm.HeapSort -> heapSort()
             }
-            _state.update { it.copy(isSorting = false, highlightedIndices = emptySet()) }
             _state.update { it.copy(
                 isSorting = false,
                 highlightedIndices = emptySet(),
@@ -90,7 +88,6 @@ class SortingListViewModel : ViewModel() {
 
     private fun resetData() {
         stopSorting()
-        _state.update { it.copy(data = initialData) }
         _state.update { it.copy(
             data = initialData,
             sortedIndices = emptySet()
@@ -144,7 +141,6 @@ class SortingListViewModel : ViewModel() {
             val temp = data[minIdx]
             data[minIdx] = data[i]
             data[i] = temp
-            _state.update { it.copy(data = data.toList()) }
             sortedIndices.add(i)
             _state.update { it.copy(
                 data = data.toList(),
@@ -175,12 +171,6 @@ class SortingListViewModel : ViewModel() {
                 _state.update { it.copy(data = data.toList()) }
             }
             data[j + 1] = key
-            _state.update { it.copy(data = data.toList()) }
-        }
-    }
-
-    private suspend fun mergeSort() {
-        // TODO: Implement merge sort
             for (k in 0..i) {
                 sortedIndices.add(k)
             }
@@ -190,6 +180,71 @@ class SortingListViewModel : ViewModel() {
             )}
         }
     }
+
+    private suspend fun mergeSort() {
+        val data = state.value.data.toMutableList()
+        val sortedRanges = mutableSetOf<Int>()
+        
+        suspend fun merge(left: Int, mid: Int, right: Int) {
+            val leftArray = data.subList(left, mid + 1).toMutableList()
+            val rightArray = data.subList(mid + 1, right + 1).toMutableList()
+            
+            var i = 0
+            var j = 0
+            var k = left
+            
+            while (i < leftArray.size && j < rightArray.size) {
+                if (!state.value.isSorting) return
+                
+                _state.update { it.copy(highlightedIndices = setOf(k, left + i, mid + 1 + j)) }
+                delay(1000)
+                
+                if (leftArray[i] <= rightArray[j]) {
+                    data[k] = leftArray[i]
+                    i++
+                } else {
+                    data[k] = rightArray[j]
+                    j++
+                }
+                k++
+                _state.update { it.copy(data = data.toList()) }
+            }
+            
+            while (i < leftArray.size) {
+                if (!state.value.isSorting) return
+                data[k] = leftArray[i]
+                i++
+                k++
+                _state.update { it.copy(data = data.toList()) }
+            }
+            
+            while (j < rightArray.size) {
+                if (!state.value.isSorting) return
+                data[k] = rightArray[j]
+                j++
+                k++
+                _state.update { it.copy(data = data.toList()) }
+            }
+
+            for (idx in left..right) {
+                sortedRanges.add(idx)
+            }
+            _state.update { it.copy(sortedIndices = sortedRanges.toSet()) }
+        }
+        
+        suspend fun mergeSortRecursive(left: Int, right: Int) {
+            if (left < right) {
+                val mid = (left + right) / 2
+                mergeSortRecursive(left, mid)
+                mergeSortRecursive(mid + 1, right)
+                merge(left, mid, right)
+            } else if (left == right) {
+                sortedRanges.add(left)
+                _state.update { it.copy(sortedIndices = sortedRanges.toSet()) }
+            }
+        }
+        
+        mergeSortRecursive(0, data.size - 1)
     }
 
     private suspend fun quickSort() {
