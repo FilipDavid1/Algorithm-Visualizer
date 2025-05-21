@@ -151,6 +151,7 @@ fun SortingListScreen(
                 ColumnChart(
                     data = state.data,
                     highlightedIndices = state.highlightedIndices,
+                    sortedIndices = state.sortedIndices,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp)
@@ -227,6 +228,7 @@ fun SortingListScreen(
 fun ColumnChart(
     data: List<Int>,
     highlightedIndices: Set<Int>,
+    sortedIndices: Set<Int>,
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
@@ -236,18 +238,25 @@ fun ColumnChart(
 
         data.forEachIndexed { index, value ->
             val isHighlighted = index in highlightedIndices
-            val color = if (isHighlighted) Color.Yellow else Color.White
+            val isSorted = index in sortedIndices
+            val color = when {
+                isHighlighted -> YellowContainer
+                isSorted -> Color.Green
+                else -> Color.White
+            }
+            val height = value * scaleFactor
             
             drawRect(
                 color = color,
                 topLeft = Offset(
-                    x = index * barWidth,
-                    y = size.height - (value * scaleFactor)
+                    x = index * barWidth + (barWidth * 0.1f),
+                    y = size.height - height
                 ),
                 size = Size(
                     width = barWidth * 0.8f,
-                    height = value * scaleFactor
-                )
+                    height = height
+                ),
+                alpha = if (isHighlighted) 1f else 0.8f
             )
         }
     }

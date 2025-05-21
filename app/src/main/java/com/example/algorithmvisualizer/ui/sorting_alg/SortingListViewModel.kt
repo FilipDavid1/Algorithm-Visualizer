@@ -32,6 +32,7 @@ class SortingListViewModel : ViewModel() {
         SortingState(
             data = initialData,
             highlightedIndices = emptySet(),
+            sortedIndices = emptySet(),
             isSorting = false,
             selectedAlgorithm = "Bubble Sort"
         )
@@ -63,6 +64,7 @@ class SortingListViewModel : ViewModel() {
         sortingJob?.cancel()
         sortingJob = viewModelScope.launch {
             _state.update { it.copy(isSorting = true) }
+            _state.update { it.copy(isSorting = true, sortedIndices = emptySet()) }
             when (SortingAlgorithm.fromString(state.value.selectedAlgorithm)) {
                 is SortingAlgorithm.BubbleSort -> bubbleSort()
                 is SortingAlgorithm.SelectionSort -> selectionSort()
@@ -72,6 +74,11 @@ class SortingListViewModel : ViewModel() {
                 is SortingAlgorithm.HeapSort -> heapSort()
             }
             _state.update { it.copy(isSorting = false, highlightedIndices = emptySet()) }
+            _state.update { it.copy(
+                isSorting = false,
+                highlightedIndices = emptySet(),
+                sortedIndices = (0 until state.value.data.size).toSet()
+            )}
         }
     }
 
@@ -84,13 +91,19 @@ class SortingListViewModel : ViewModel() {
     private fun resetData() {
         stopSorting()
         _state.update { it.copy(data = initialData) }
+        _state.update { it.copy(
+            data = initialData,
+            sortedIndices = emptySet()
+        )}
     }
 
     private suspend fun bubbleSort() {
         val data = state.value.data.toMutableList()
         val n = data.size
+        val sortedIndices = mutableSetOf<Int>()
         
         for (i in 0 until n) {
+            var swapped = false
             for (j in 0 until n - i - 1) {
                 if (!state.value.isSorting) return
                 
@@ -101,15 +114,20 @@ class SortingListViewModel : ViewModel() {
                     val temp = data[j]
                     data[j] = data[j + 1]
                     data[j + 1] = temp
+                    swapped = true
                     _state.update { it.copy(data = data.toList()) }
                 }
             }
+            sortedIndices.add(n - i - 1)
+            _state.update { it.copy(sortedIndices = sortedIndices.toSet()) }
+            if (!swapped) break
         }
     }
 
     private suspend fun selectionSort() {
         val data = state.value.data.toMutableList()
         val n = data.size
+        val sortedIndices = mutableSetOf<Int>()
 
         for (i in 0 until n - 1) {
             var minIdx = i
@@ -127,12 +145,20 @@ class SortingListViewModel : ViewModel() {
             data[minIdx] = data[i]
             data[i] = temp
             _state.update { it.copy(data = data.toList()) }
+            sortedIndices.add(i)
+            _state.update { it.copy(
+                data = data.toList(),
+                sortedIndices = sortedIndices.toSet()
+            )}
         }
+        sortedIndices.add(n - 1)
+        _state.update { it.copy(sortedIndices = sortedIndices.toSet()) }
     }
 
     private suspend fun insertionSort() {
         val data = state.value.data.toMutableList()
         val n = data.size
+        val sortedIndices = mutableSetOf<Int>()
 
         for (i in 1 until n) {
             val key = data[i]
@@ -155,6 +181,15 @@ class SortingListViewModel : ViewModel() {
 
     private suspend fun mergeSort() {
         // TODO: Implement merge sort
+            for (k in 0..i) {
+                sortedIndices.add(k)
+            }
+            _state.update { it.copy(
+                data = data.toList(),
+                sortedIndices = sortedIndices.toSet()
+            )}
+        }
+    }
     }
 
     private suspend fun quickSort() {
