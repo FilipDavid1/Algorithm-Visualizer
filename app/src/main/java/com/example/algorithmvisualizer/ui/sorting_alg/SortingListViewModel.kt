@@ -130,9 +130,27 @@ class SortingListViewModel : ViewModel() {
         }
     }
 
-    // Placeholder for other sorting algorithms
     private suspend fun insertionSort() {
-        // TODO: Implement insertion sort
+        val data = state.value.data.toMutableList()
+        val n = data.size
+
+        for (i in 1 until n) {
+            val key = data[i]
+            var j = i - 1
+
+            while (j >= 0 && data[j] > key) {
+                if (!state.value.isSorting) return
+
+                _state.update { it.copy(highlightedIndices = setOf(j, j + 1)) }
+                delay(1000)
+
+                data[j + 1] = data[j]
+                j--
+                _state.update { it.copy(data = data.toList()) }
+            }
+            data[j + 1] = key
+            _state.update { it.copy(data = data.toList()) }
+        }
     }
 
     private suspend fun mergeSort() {
