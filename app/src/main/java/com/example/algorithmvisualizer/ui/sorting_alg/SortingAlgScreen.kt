@@ -148,14 +148,52 @@ fun SortingListScreen(
                     .padding(bottom = 16.dp),
                 colors = CardDefaults.cardColors(containerColor = BlueContainer)
             ) {
-                ColumnChart(
-                    data = state.data,
-                    highlightedIndices = state.highlightedIndices,
-                    sortedIndices = state.sortedIndices,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    ColumnChart(
+                        data = state.data,
+                        highlightedIndices = state.highlightedIndices,
+                        sortedIndices = state.sortedIndices,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+
+                    Text(
+                        text = if (state.isSorting) {
+                            state.comparisonMessage
+                        } else {
+                            if (state.comparisonMessage.isEmpty()) {
+                                "Press sort to start ${state.selectedAlgorithm} algorithm"
+                            } else {
+                                state.comparisonMessage
+                            }
+                        },
+                        color = WhiteText,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+
+                    DashedDivider(color = YellowContainer)
+
+                    // Timer display
+                    Text(
+                        text = if (state.elapsedTimeMs > 0) {
+                            "Time: ${String.format("%.2f", state.elapsedTimeMs / 1000.0)} seconds"
+                        } else {
+                            "Time: 0.00 seconds"
+                        },
+                        color = WhiteText,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
             }
         }
 
