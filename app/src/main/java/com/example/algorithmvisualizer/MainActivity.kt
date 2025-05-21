@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.algorithmvisualizer.ui.home.HomeScreen
+import com.example.algorithmvisualizer.ui.sorting_alg.SortingListScreen
 import com.example.algorithmvisualizer.ui.theme.AlgorithmVisualizerTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             composable("home") {
-                                HomeScreen(navController)
+                                SortingListScreen()
                             }
                         }
                     }
