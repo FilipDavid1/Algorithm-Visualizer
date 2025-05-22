@@ -11,8 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.algorithmvisualizer.ui.home.HomeScreen
 import com.example.algorithmvisualizer.ui.sorting_alg.SortingListScreen
 import com.example.algorithmvisualizer.ui.theme.AlgorithmVisualizerTheme
+
+object Routes {
+    const val HOME = "home"
+    const val SORTING = "sorting"
+    const val SEARCHING = "searching"
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,10 +34,13 @@ class MainActivity : ComponentActivity() {
                     content = { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = "home",
+                            startDestination = Routes.HOME,
                             modifier = Modifier.padding(innerPadding)
                         ) {
-                            composable("home") {
+                            composable(Routes.HOME) {
+                                HomeScreen(navController)
+                            }
+                            composable(Routes.SORTING) {
                                 SortingListScreen()
                             }
                         }

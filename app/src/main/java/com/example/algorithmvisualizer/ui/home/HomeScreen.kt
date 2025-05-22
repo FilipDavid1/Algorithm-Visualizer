@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.algorithmvisualizer.Routes
 import com.example.algorithmvisualizer.ui.theme.BlueContainer
 import com.example.algorithmvisualizer.ui.theme.WhiteText
 import com.example.algorithmvisualizer.ui.theme.YellowContainer
@@ -60,7 +61,7 @@ fun HomeScreen(navController: NavHostController) {
             description = stringResource(R.string.sorting_algorithms_desc),
             count = 6,
             icon = Icons.AutoMirrored.Filled.Sort,
-        ) { }
+        ) { navController.navigate(Routes.SORTING) }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -70,7 +71,7 @@ fun HomeScreen(navController: NavHostController) {
             count = 3,
             iconOnRight = true,
             icon = Icons.Default.Search,
-        ) { }
+        ) { navController.navigate(Routes.SEARCHING) }
     }
 }
 
