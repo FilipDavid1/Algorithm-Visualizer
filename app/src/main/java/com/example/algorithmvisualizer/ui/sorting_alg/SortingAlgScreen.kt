@@ -86,113 +86,140 @@ fun SortingListScreen(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .weight(1f)
+                .padding(bottom = 16.dp),
             shape = RoundedCornerShape(0.dp),
             colors = CardDefaults.cardColors(containerColor = BlueContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            // Title
-            Text(
-                text = "Pick sorting algorithm:",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = WhiteText,
-                modifier = Modifier.padding(16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Dropdown menu for algorithm selection
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.padding(16.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
             ) {
-                TextField(
-                    value = state.selectedAlgorithm,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                    },
-                    colors = yellowDropdownColors(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
+                // Title
+                Text(
+                    text = "Pick sorting algorithm:",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = WhiteText,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
 
-                ExposedDropdownMenu(
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Dropdown menu for algorithm selection
+                ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.background(YellowContainer)
+                    onExpandedChange = { expanded = !expanded }
                 ) {
-                    algorithms.forEach { algorithm ->
-                        DropdownMenuItem(
-                            text = { Text(text = algorithm, color = WhiteText) },
-                            onClick = {
-                                viewModel.onEvent(SortingEvent.SelectAlgorithm(algorithm))
-                                expanded = false
-                            },
-                            modifier = Modifier.background(YellowContainer)
-                        )
-                        DashedDivider(color = BlueContainer)
+                    TextField(
+                        value = state.selectedAlgorithm,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        colors = yellowDropdownColors(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(YellowContainer)
+                    ) {
+                        algorithms.forEach { algorithm ->
+                            DropdownMenuItem(
+                                text = { Text(text = algorithm, color = WhiteText) },
+                                onClick = {
+                                    viewModel.onEvent(SortingEvent.SelectAlgorithm(algorithm))
+                                    expanded = false
+                                },
+                                modifier = Modifier.background(YellowContainer)
+                            )
+                            DashedDivider(color = BlueContainer)
+                        }
                     }
                 }
-            }
 
-            // Column Chart Visualization
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp)
-                    .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = BlueContainer)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize()
+                // Column Chart Visualization
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(vertical = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = BlueContainer)
                 ) {
-                    ColumnChart(
-                        data = state.data,
-                        highlightedIndices = state.highlightedIndices,
-                        sortedIndices = state.sortedIndices,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        ColumnChart(
+                            data = state.data,
+                            highlightedIndices = state.highlightedIndices,
+                            sortedIndices = state.sortedIndices,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        )
 
-                    Text(
-                        text = if (state.isSorting) {
-                            state.comparisonMessage
-                        } else {
-                            if (state.comparisonMessage.isEmpty()) {
-                                "Press sort to start ${state.selectedAlgorithm} algorithm"
-                            } else {
+                        Text(
+                            text = if (state.isSorting) {
                                 state.comparisonMessage
-                            }
-                        },
-                        color = WhiteText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    )
+                            } else {
+                                if (state.comparisonMessage.isEmpty()) {
+                                    "Press sort to start ${state.selectedAlgorithm} algorithm"
+                                } else {
+                                    state.comparisonMessage
+                                }
+                            },
+                            color = WhiteText,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        )
 
-                    DashedDivider(color = YellowContainer)
+                        DashedDivider(color = YellowContainer)
 
-                    // Timer display
-                    Text(
-                        text = if (state.elapsedTimeMs > 0) {
-                            "Time: ${String.format("%.2f", state.elapsedTimeMs / 1000.0)} seconds"
-                        } else {
-                            "Time: 0.00 seconds"
-                        },
-                        color = WhiteText,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    )
+                        // Timer display
+                        Text(
+                            text = if (state.elapsedTimeMs > 0) {
+                                "Time: ${String.format("%.2f", state.elapsedTimeMs / 1000.0)} seconds"
+                            } else {
+                                "Time: 0.00 seconds"
+                            },
+                            color = WhiteText,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+
+                        DashedDivider(color = YellowContainer)
+
+                        // Algorithm Description
+                        val algorithmDescription = when (state.selectedAlgorithm) {
+                            "Bubble Sort" -> "Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until no swaps are needed."
+                            "Selection Sort" -> "Selection Sort divides the array into a sorted and unsorted region, repeatedly finding the minimum element from the unsorted region and placing it at the end of the sorted region."
+                            "Insertion Sort" -> "Insertion Sort builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array."
+                            "Merge Sort" -> "Merge Sort is a divide-and-conquer algorithm that recursively breaks down the array into smaller subarrays, sorts them, and then merges them back together in sorted order."
+                            else -> ""
+                        }
+
+                        Text(
+                            text = algorithmDescription,
+                            color = WhiteText,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
@@ -201,7 +228,7 @@ fun SortingListScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
