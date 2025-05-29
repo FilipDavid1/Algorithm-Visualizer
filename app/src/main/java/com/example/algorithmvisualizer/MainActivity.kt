@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
                                 HomeScreen(navController)
                             }
                             composable(Routes.SORTING) {
-                                SortingListScreen()
+                                SortingListScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
                             }
                         }
                     }

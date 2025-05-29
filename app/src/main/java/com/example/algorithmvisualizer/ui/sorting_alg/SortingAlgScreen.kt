@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +43,8 @@ import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortingListScreen(
-    viewModel: SortingListViewModel = viewModel()
+    viewModel: SortingListViewModel = viewModel(),
+    onNavigateBack: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val algorithms by viewModel.algorithms.collectAsState()
@@ -70,16 +70,35 @@ fun SortingListScreen(
                 colors = CardDefaults.cardColors(containerColor = YellowContainer),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.sorting_algorithms_title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = WhiteText,
+                Row(
                     modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 24.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onNavigateBack,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = WhiteText
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Navigate back"
+                        )
+                    }
+                    Text(
+                        text = stringResource(R.string.sorting_algorithms_title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = WhiteText,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 48.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
 
             Card(
