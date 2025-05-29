@@ -6,4 +6,74 @@
     <string name="searching_algorithms_desc">Find values in arrays using efficient search methods.</string>
     <string name="number_of_algorithms">Number of available algorithms:</string>
     <string name="show_button_text">SHOW</string>
+
+    <!-- Algorithm Names -->
+    <string name="bubble_sort">Bubble Sort</string>
+    <string name="selection_sort">Selection Sort</string>
+    <string name="insertion_sort">Insertion Sort</string>
+    <string name="merge_sort">Merge Sort</string>
+
+    <!-- Algorithm Descriptions -->
+    <string name="bubble_sort_desc">Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until no swaps are needed.</string>
+    <string name="selection_sort_desc">Selection Sort divides the array into a sorted and unsorted region, repeatedly finding the minimum element from the unsorted region and adding it to the sorted region.</string>
+    <string name="insertion_sort_desc">Insertion Sort builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array.</string>
+    <string name="merge_sort_desc">Merge Sort is a divide-and-conquer algorithm that recursively breaks down the array into smaller subarrays, sorts them, and then merges them back together.</string>
+
+    <!-- Sorting Screen -->
+    <string name="pick_algorithm">Pick sorting algorithm:</string>
+    <string name="press_sort_to_start">Press sort to start %1$s algorithm</string>
+    <string name="timer_display">Time: %.2f seconds</string>
+    <string name="timer_zero">Time: 0.00 seconds</string>
+    <string name="info_button_hint">Click to dive into logic, code &amp; O(n)</string>
+    <string name="sort_button">SORT</string>
+    <string name="stop_button">STOP</string>
+    <string name="reset_button">RESET</string>
+    <string name="back">Back</string>
+
+    <!-- Algorithm Info Screen -->
+    <string name="time_complexity">Time Complexity</string>
+    <string name="space_complexity">Space Complexity</string>
+    <string name="algorithm_logic">Algorithm Logic</string>
+    <string name="best_use_cases">Best Use Cases</string>
+
+    <!-- Time Complexities -->
+    <string name="bubble_sort_time">Best: O(n)\nAverage: O(n²)\nWorst: O(n²)</string>
+    <string name="selection_sort_time">Best: O(n²)\nAverage: O(n²)\nWorst: O(n²)</string>
+    <string name="insertion_sort_time">Best: O(n)\nAverage: O(n²)\nWorst: O(n²)</string>
+    <string name="merge_sort_time">Best: O(n log n)\nAverage: O(n log n)\nWorst: O(n log n)</string>
+
+    <!-- Space Complexities -->
+    <string name="bubble_sort_space">O(1)</string>
+    <string name="selection_sort_space">O(1)</string>
+    <string name="insertion_sort_space">O(1)</string>
+    <string name="merge_sort_space">O(n)</string>
+
+    <!-- Algorithm Logic Steps -->
+    <string name="bubble_sort_logic">1. Start with the first element\n2. Compare with next element\n3. Swap if needed\n4. Move to next pair\n5. Repeat until no swaps needed</string>
+    <string name="selection_sort_logic">1. Find minimum in unsorted region\n2. Swap with first unsorted element\n3. Expand sorted region\n4. Repeat until array is sorted</string>
+    <string name="insertion_sort_logic">1. Start with second element\n2. Compare with previous elements\n3. Shift larger elements right\n4. Insert in correct position\n5. Repeat for all elements</string>
+    <string name="merge_sort_logic">1. Divide array in half\n2. Recursively sort both halves\n3. Merge sorted halves\n4. Compare elements\n5. Build final sorted array</string>
+
+    <!-- Use Cases -->
+    <string name="bubble_sort_uses">• Small datasets\n• Nearly sorted arrays\n• Educational purposes</string>
+    <string name="selection_sort_uses">• Small datasets\n• Memory constrained systems\n• When writes are expensive</string>
+    <string name="insertion_sort_uses">• Small datasets\n• Nearly sorted arrays\n• Online sorting (stream of data)</string>
+    <string name="merge_sort_uses">• Large datasets\n• External sorting\n• Stable sorting required</string>
+
+    <!-- Sorting Algorithm Messages -->
+    <string name="comparing_elements">Comparing elements %1$d and %2$d</string>
+    <string name="swapped_elements">Swapped elements %1$d and %2$d</string>
+    <string name="pass_completed">Pass %1$d completed</string>
+    <string name="moved_smallest_element">Moved smallest element %1$d to position %2$d</string>
+    <string name="inserting_element">Inserting element %1$d into sorted portion</string>
+    <string name="shifted_element">Shifted element %1$d right</string>
+    <string name="inserted_element">Inserted %1$d at correct position</string>
+    <string name="merging_subarrays">Merging subarrays from index %1$d to %2$d</string>
+    <string name="placed_smaller_element">Placed smaller element %1$d at position</string>
+    <string name="copying_remaining_elements_from_left_subarray">Copying remaining elements from left subarray</string>
+    <string name="copying_remaining_elements_from_right_subarray">Copying remaining elements from right subarray</string>
+    <string name="merged_subarray">Merged subarray from %1$d to %2$d</string>
+    <string name="dividing_array">Dividing array from index %1$d to %2$d</string>
+    <string name="single_element_at_index">Single element at index %1$d is sorted</string>
+    <string name="sorting_completed">Sorting completed!</string>
 </resources>

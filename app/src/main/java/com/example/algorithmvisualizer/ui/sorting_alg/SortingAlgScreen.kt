@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -84,7 +84,7 @@ fun SortingListScreen(
                         )
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Navigate back"
                         )
                     }
@@ -117,7 +117,7 @@ fun SortingListScreen(
                 ) {
                     // Title
                     Text(
-                        text = "Pick sorting algorithm:",
+                        text = stringResource(R.string.pick_algorithm),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = WhiteText,
@@ -189,7 +189,7 @@ fun SortingListScreen(
                                     state.comparisonMessage
                                 } else {
                                     if (state.comparisonMessage.isEmpty()) {
-                                        "Press sort to start ${state.selectedAlgorithm} algorithm"
+                                        stringResource(R.string.press_sort_to_start, state.selectedAlgorithm)
                                     } else {
                                         state.comparisonMessage
                                     }
@@ -208,9 +208,9 @@ fun SortingListScreen(
                             // Timer display
                             Text(
                                 text = if (state.elapsedTimeMs > 0) {
-                                    "Time: ${String.format("%.2f", state.elapsedTimeMs / 1000.0)} seconds"
+                                    stringResource(R.string.timer_display, state.elapsedTimeMs / 1000.0f)
                                 } else {
-                                    "Time: 0.00 seconds"
+                                    stringResource(R.string.timer_zero)
                                 },
                                 color = WhiteText,
                                 textAlign = TextAlign.Center,
@@ -225,10 +225,10 @@ fun SortingListScreen(
 
                             // Algorithm Description
                             val algorithmDescription = when (state.selectedAlgorithm) {
-                                "Bubble Sort" -> "Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The pass through the list is repeated until no swaps are needed."
-                                "Selection Sort" -> "Selection Sort divides the array into a sorted and unsorted region, repeatedly finding the minimum element from the unsorted region and placing it at the end of the sorted region."
-                                "Insertion Sort" -> "Insertion Sort builds the final sorted array one item at a time, by repeatedly inserting a new element into the sorted portion of the array."
-                                "Merge Sort" -> "Merge Sort is a divide-and-conquer algorithm that recursively breaks down the array into smaller subarrays, sorts them, and then merges them back together in sorted order."
+                                stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_desc)
+                                stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_desc)
+                                stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_desc)
+                                stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_desc)
                                 else -> ""
                             }
 
@@ -269,7 +269,7 @@ fun SortingListScreen(
                                     )
                                 }
                                 Text(
-                                    text = "Click to dive into logic, code & O(n)",
+                                    text = stringResource(R.string.info_button_hint),
                                     color = WhiteText,
                                     fontSize = 12.sp,
                                     modifier = Modifier.padding(start = 12.dp)
@@ -301,7 +301,7 @@ fun SortingListScreen(
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("SORT")
+                    Text(stringResource(R.string.sort_button))
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -320,7 +320,7 @@ fun SortingListScreen(
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("STOP")
+                    Text(stringResource(R.string.stop_button))
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -339,7 +339,7 @@ fun SortingListScreen(
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("RESET")
+                    Text(stringResource(R.string.reset_button))
                 }
             }
         }
@@ -411,7 +411,7 @@ fun AlgorithmInfoScreen(
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }
@@ -438,17 +438,17 @@ fun AlgorithmInfoScreen(
             ) {
                 // Time Complexity Section
                 Text(
-                    text = "Time Complexity",
+                    text = stringResource(R.string.time_complexity),
                     style = MaterialTheme.typography.titleLarge,
                     color = WhiteText,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 val timeComplexity = when (algorithm) {
-                    "Bubble Sort" -> "Best: O(n)\nAverage: O(n²)\nWorst: O(n²)"
-                    "Selection Sort" -> "Best: O(n²)\nAverage: O(n²)\nWorst: O(n²)"
-                    "Insertion Sort" -> "Best: O(n)\nAverage: O(n²)\nWorst: O(n²)"
-                    "Merge Sort" -> "Best: O(n log n)\nAverage: O(n log n)\nWorst: O(n log n)"
+                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_time)
+                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_time)
+                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_time)
+                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_time)
                     else -> ""
                 }
                 Text(
@@ -463,17 +463,17 @@ fun AlgorithmInfoScreen(
 
                 // Space Complexity Section
                 Text(
-                    text = "Space Complexity",
+                    text = stringResource(R.string.space_complexity),
                     style = MaterialTheme.typography.titleLarge,
                     color = WhiteText,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 val spaceComplexity = when (algorithm) {
-                    "Bubble Sort" -> "O(1)"
-                    "Selection Sort" -> "O(1)"
-                    "Insertion Sort" -> "O(1)"
-                    "Merge Sort" -> "O(n)"
+                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_space)
+                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_space)
+                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_space)
+                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_space)
                     else -> ""
                 }
                 Text(
@@ -488,17 +488,17 @@ fun AlgorithmInfoScreen(
 
                 // Algorithm Logic Section
                 Text(
-                    text = "Algorithm Logic",
+                    text = stringResource(R.string.algorithm_logic),
                     style = MaterialTheme.typography.titleLarge,
                     color = WhiteText,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 val logic = when (algorithm) {
-                    "Bubble Sort" -> "1. Start with the first element\n2. Compare with next element\n3. Swap if needed\n4. Move to next pair\n5. Repeat until no swaps needed"
-                    "Selection Sort" -> "1. Find minimum in unsorted region\n2. Swap with first unsorted element\n3. Expand sorted region\n4. Repeat until array is sorted"
-                    "Insertion Sort" -> "1. Start with second element\n2. Compare with previous elements\n3. Shift larger elements right\n4. Insert in correct position\n5. Repeat for all elements"
-                    "Merge Sort" -> "1. Divide array in half\n2. Recursively sort both halves\n3. Merge sorted halves\n4. Compare elements\n5. Build final sorted array"
+                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_logic)
+                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_logic)
+                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_logic)
+                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_logic)
                     else -> ""
                 }
                 Text(
@@ -513,17 +513,17 @@ fun AlgorithmInfoScreen(
 
                 // Use Cases Section
                 Text(
-                    text = "Best Use Cases",
+                    text = stringResource(R.string.best_use_cases),
                     style = MaterialTheme.typography.titleLarge,
                     color = WhiteText,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 val useCases = when (algorithm) {
-                    "Bubble Sort" -> "• Small datasets\n• Nearly sorted arrays\n• Educational purposes"
-                    "Selection Sort" -> "• Small datasets\n• Memory constrained systems\n• When writes are expensive"
-                    "Insertion Sort" -> "• Small datasets\n• Nearly sorted arrays\n• Online sorting (stream of data)"
-                    "Merge Sort" -> "• Large datasets\n• External sorting\n• Stable sorting required"
+                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_uses)
+                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_uses)
+                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_uses)
+                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_uses)
                     else -> ""
                 }
                 Text(

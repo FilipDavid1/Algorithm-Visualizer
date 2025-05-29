@@ -1,7 +1,9 @@
 package com.example.algorithmvisualizer.ui.sorting_alg
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.algorithmvisualizer.R
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingAlgorithm
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingState
@@ -13,17 +15,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SortingListViewModel : ViewModel() {
+class SortingListViewModel(application: Application) : AndroidViewModel(application) {
     private val initialData = listOf(8, 3, 5, 4, 7, 1, 6, 2)
     private var startTime: Long = 0
     private var timerJob: Job? = null
 
     private val _algorithms = MutableStateFlow(
         listOf(
-            "Bubble Sort",
-            "Selection Sort",
-            "Insertion Sort",
-            "Merge Sort"
+            getApplication<Application>().getString(R.string.bubble_sort),
+            getApplication<Application>().getString(R.string.selection_sort),
+            getApplication<Application>().getString(R.string.insertion_sort),
+            getApplication<Application>().getString(R.string.merge_sort),
         )
     )
     val algorithms: StateFlow<List<String>> = _algorithms.asStateFlow()
@@ -34,7 +36,7 @@ class SortingListViewModel : ViewModel() {
             highlightedIndices = emptySet(),
             sortedIndices = emptySet(),
             isSorting = false,
-            selectedAlgorithm = "Bubble Sort"
+            selectedAlgorithm = getApplication<Application>().getString(R.string.bubble_sort)
         )
     )
     val state: StateFlow<SortingState> = _state.asStateFlow()
@@ -137,7 +139,7 @@ class SortingListViewModel : ViewModel() {
 
                 _state.update { it.copy(
                     highlightedIndices = setOf(j, j + 1),
-                    comparisonMessage = "Comparing elements ${data[j]} and ${data[j + 1]}"
+                    comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], data[j + 1])
                 ) }
                 delay(500)
 
@@ -148,14 +150,14 @@ class SortingListViewModel : ViewModel() {
                     swapped = true
                     _state.update { it.copy(
                         data = data.toList(),
-                        comparisonMessage = "Swapped elements ${data[j]} and ${data[j + 1]}"
+                        comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
                     ) }
                 }
             }
             sortedIndices.add(n - i - 1)
             _state.update { it.copy(
                 sortedIndices = sortedIndices.toSet(),
-                comparisonMessage = if (i < n - 1) "Pass ${i + 1} completed" else "Sorting completed!"
+                comparisonMessage = if (i < n - 1) getApplication<Application>().getString(R.string.pass_completed, i + 1) else getApplication<Application>().getString(R.string.sorting_completed)
             ) }
             if (!swapped) break
         }
@@ -173,7 +175,7 @@ class SortingListViewModel : ViewModel() {
 
                 _state.update { it.copy(
                     highlightedIndices = setOf(minIdx, j),
-                    comparisonMessage = "Comparing elements ${data[minIdx]} and ${data[j]}"
+                    comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[minIdx], data[j])
                 ) }
                 delay(500)
 
@@ -188,13 +190,13 @@ class SortingListViewModel : ViewModel() {
             _state.update { it.copy(
                 data = data.toList(),
                 sortedIndices = sortedIndices.toSet(),
-                comparisonMessage = "Moved smallest element ${data[i]} to position $i"
+                comparisonMessage = getApplication<Application>().getString(R.string.moved_smallest_element, data[i], i)
             )}
         }
         sortedIndices.add(n - 1)
         _state.update { it.copy(
             sortedIndices = sortedIndices.toSet(),
-            comparisonMessage = "Sorting completed!"
+            comparisonMessage = getApplication<Application>().getString(R.string.sorting_completed)
         ) }
     }
 
@@ -208,7 +210,7 @@ class SortingListViewModel : ViewModel() {
             var j = i - 1
 
             _state.update { it.copy(
-                comparisonMessage = "Inserting element $key into sorted portion"
+                comparisonMessage = getApplication<Application>().getString(R.string.inserting_element, key)
             )}
 
             while (j >= 0 && data[j] > key) {
@@ -216,7 +218,7 @@ class SortingListViewModel : ViewModel() {
 
                 _state.update { it.copy(
                     highlightedIndices = setOf(j, j + 1),
-                    comparisonMessage = "Comparing elements ${data[j]} and $key"
+                    comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], key)
                 ) }
                 delay(1000)
 
@@ -224,7 +226,7 @@ class SortingListViewModel : ViewModel() {
                 j--
                 _state.update { it.copy(
                     data = data.toList(),
-                    comparisonMessage = "Shifted element ${data[j + 2]} right"
+                    comparisonMessage = getApplication<Application>().getString(R.string.shifted_element, data[j + 2])
                 ) }
             }
             data[j + 1] = key
@@ -234,7 +236,7 @@ class SortingListViewModel : ViewModel() {
             _state.update { it.copy(
                 data = data.toList(),
                 sortedIndices = sortedIndices.toSet(),
-                comparisonMessage = "Inserted $key at correct position"
+                comparisonMessage = getApplication<Application>().getString(R.string.inserted_element, key)
             )}
         }
     }
@@ -244,9 +246,15 @@ class SortingListViewModel : ViewModel() {
         val sortedRanges = mutableSetOf<Int>()
 
         suspend fun merge(left: Int, mid: Int, right: Int) {
-            _state.update { it.copy(
-                comparisonMessage = "Merging subarrays from index $left to $right"
-            )}
+            _state.update {
+                it.copy(
+                    comparisonMessage = getApplication<Application>().getString(
+                        R.string.merging_subarrays,
+                        left,
+                        right
+                    )
+                )
+            }
 
             val leftArray = data.subList(left, mid + 1).toMutableList()
             val rightArray = data.subList(mid + 1, right + 1).toMutableList()
@@ -258,10 +266,16 @@ class SortingListViewModel : ViewModel() {
             while (i < leftArray.size && j < rightArray.size) {
                 if (!state.value.isSorting) return
 
-                _state.update { it.copy(
-                    highlightedIndices = setOf(k, left + i, mid + 1 + j),
-                    comparisonMessage = "Comparing elements ${leftArray[i]} and ${rightArray[j]}"
-                ) }
+                _state.update {
+                    it.copy(
+                        highlightedIndices = setOf(k, left + i, mid + 1 + j),
+                        comparisonMessage = getApplication<Application>().getString(
+                            R.string.comparing_elements,
+                            leftArray[i],
+                            rightArray[j]
+                        )
+                    )
+                }
                 delay(1000)
 
                 if (leftArray[i] <= rightArray[j]) {
@@ -272,10 +286,15 @@ class SortingListViewModel : ViewModel() {
                     j++
                 }
                 k++
-                _state.update { it.copy(
-                    data = data.toList(),
-                    comparisonMessage = "Placed smaller element at position $k"
-                ) }
+                _state.update {
+                    it.copy(
+                        data = data.toList(),
+                        comparisonMessage = getApplication<Application>().getString(
+                            R.string.placed_smaller_element,
+                            data[k]
+                        )
+                    )
+                }
             }
 
             while (i < leftArray.size) {
@@ -283,10 +302,12 @@ class SortingListViewModel : ViewModel() {
                 data[k] = leftArray[i]
                 i++
                 k++
-                _state.update { it.copy(
-                    data = data.toList(),
-                    comparisonMessage = "Copying remaining elements from left subarray"
-                ) }
+                _state.update {
+                    it.copy(
+                        data = data.toList(),
+                        comparisonMessage = getApplication<Application>().getString(R.string.copying_remaining_elements_from_left_subarray)
+                    )
+                }
             }
 
             while (j < rightArray.size) {
@@ -294,39 +315,58 @@ class SortingListViewModel : ViewModel() {
                 data[k] = rightArray[j]
                 j++
                 k++
-                _state.update { it.copy(
-                    data = data.toList(),
-                    comparisonMessage = "Copying remaining elements from right subarray"
-                ) }
+                _state.update {
+                    it.copy(
+                        data = data.toList(),
+                        comparisonMessage = getApplication<Application>().getString(R.string.copying_remaining_elements_from_right_subarray)
+                    )
+                }
             }
 
             for (idx in left..right) {
                 sortedRanges.add(idx)
             }
-            _state.update { it.copy(
-                sortedIndices = sortedRanges.toSet(),
-                comparisonMessage = "Merged subarray from $left to $right"
-            ) }
+            _state.update {
+                it.copy(
+                    sortedIndices = sortedRanges.toSet(),
+                    comparisonMessage = getApplication<Application>().getString(
+                        R.string.merged_subarray,
+                        left,
+                        right
+                    )
+                )
+            }
         }
 
         suspend fun mergeSortRecursive(left: Int, right: Int) {
             if (left < right) {
                 val mid = (left + right) / 2
-                _state.update { it.copy(
-                    comparisonMessage = "Dividing array from index $left to $right"
-                )}
+                _state.update {
+                    it.copy(
+                        comparisonMessage = getApplication<Application>().getString(
+                            R.string.dividing_array,
+                            left,
+                            right
+                        )
+                    )
+                }
                 mergeSortRecursive(left, mid)
                 mergeSortRecursive(mid + 1, right)
                 merge(left, mid, right)
             } else if (left == right) {
                 sortedRanges.add(left)
-                _state.update { it.copy(
-                    sortedIndices = sortedRanges.toSet(),
-                    comparisonMessage = "Single element at index $left is sorted"
-                ) }
+                _state.update {
+                    it.copy(
+                        sortedIndices = sortedRanges.toSet(),
+                        comparisonMessage = getApplication<Application>().getString(
+                            R.string.single_element_at_index,
+                            left
+                        )
+                    )
+                }
             }
         }
-        
+
         mergeSortRecursive(0, data.size - 1)
     }
 }
