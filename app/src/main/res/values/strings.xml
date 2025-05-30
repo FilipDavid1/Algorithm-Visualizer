@@ -76,4 +76,23 @@
     <string name="dividing_array">Dividing array from index %1$d to %2$d</string>
     <string name="single_element_at_index">Single element at index %1$d is sorted</string>
     <string name="sorting_completed">Sorting completed!</string>
+
+    <!-- Searching Algorithms -->
+    <string name="searching_algorithms">Searching Algorithms</string>
+    <string name="linear_search">Linear Search</string>
+    <string name="binary_search">Binary Search</string>
+    <string name="jump_search">Jump Search</string>
+    <string name="insert_search_number">Insert number you want to search</string>
+    <string name="search">Search</string>
+    <string name="stop">Stop</string>
+    <string name="reset">Reset</string>
+    <string name="algorithm_info">Click to dive into logic, code &amp; O(n)</string>
+    <string name="comparing_with_target">Comparing %1$d with target %2$d</string>
+    <string name="found_target_at_index">Found %1$d at index %2$d</string>
+    <string name="target_not_found">Target %1$d not found in the array</string>
+    <string name="searching_left_half">Searching in the left half</string>
+    <string name="searching_right_half">Searching in the right half</string>
+    <string name="jumping_to_block">Jumping to block %1$d</string>
+    <string name="linear_scanning">Linear scanning at index %1$d</string>
+    <string name="time_elapsed">Time: %.1fs</string>
 </resources>

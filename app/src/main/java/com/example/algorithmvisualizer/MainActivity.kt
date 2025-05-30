@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.algorithmvisualizer.ui.home.HomeScreen
+import com.example.algorithmvisualizer.ui.searching_alg.SearchingScreen
 import com.example.algorithmvisualizer.ui.sorting_alg.SortingListScreen
 import com.example.algorithmvisualizer.ui.theme.AlgorithmVisualizerTheme
 
@@ -42,6 +43,11 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Routes.SORTING) {
                                 SortingListScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Routes.SEARCHING) {
+                                SearchingScreen(
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
