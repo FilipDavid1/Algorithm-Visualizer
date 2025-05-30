@@ -59,8 +59,6 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
             is SortingEvent.ResetData -> {
                 resetData()
             }
-
-            is SortingEvent.SetAnimationSpeed -> TODO()
         }
     }
 
@@ -204,14 +202,17 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
         val data = state.value.data.toMutableList()
         val n = data.size
         val sortedIndices = mutableSetOf<Int>()
+        sortedIndices.add(0)
 
         for (i in 1 until n) {
             val key = data[i]
             var j = i - 1
 
             _state.update { it.copy(
+                highlightedIndices = setOf(i),
                 comparisonMessage = getApplication<Application>().getString(R.string.inserting_element, key)
             )}
+            delay(500)
 
             while (j >= 0 && data[j] > key) {
                 if (!state.value.isSorting) return
@@ -219,26 +220,40 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 _state.update { it.copy(
                     highlightedIndices = setOf(j, j + 1),
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], key)
-                ) }
-                delay(1000)
+                )}
+                delay(500)
 
+                val temp = data[j + 1]
                 data[j + 1] = data[j]
-                j--
+                data[j] = temp
+
                 _state.update { it.copy(
                     data = data.toList(),
-                    comparisonMessage = getApplication<Application>().getString(R.string.shifted_element, data[j + 2])
-                ) }
+                    comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
+                )}
+                delay(500)
+                
+                j--
             }
-            data[j + 1] = key
+            
             for (k in 0..i) {
                 sortedIndices.add(k)
             }
+            
             _state.update { it.copy(
                 data = data.toList(),
                 sortedIndices = sortedIndices.toSet(),
+                highlightedIndices = setOf(j + 1),
                 comparisonMessage = getApplication<Application>().getString(R.string.inserted_element, key)
             )}
+            delay(500)
         }
+
+        _state.update { it.copy(
+            sortedIndices = (0 until n).toSet(),
+            highlightedIndices = emptySet(),
+            comparisonMessage = getApplication<Application>().getString(R.string.sorting_completed)
+        )}
     }
 
     private suspend fun mergeSort() {
