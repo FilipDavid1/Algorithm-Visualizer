@@ -247,7 +247,15 @@ fun SearchingScreen(
 
                     // Status message
                     Text(
-                        text = state.comparisonMessage,
+                        text = if (state.isSearching) {
+                            state.comparisonMessage
+                        } else {
+                            if (state.comparisonMessage.isEmpty()) {
+                                stringResource(R.string.press_search_to_start, state.selectedAlgorithm)
+                            } else {
+                                state.comparisonMessage
+                            }
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         color = WhiteText,
@@ -266,6 +274,7 @@ fun SearchingScreen(
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
 
+                    Spacer(modifier = Modifier.height(10.dp))
                     DashedDivider()
 
                     // Algorithm Description
@@ -381,6 +390,87 @@ fun SearchingScreen(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(stringResource(R.string.reset))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DashedDivider(color = YellowContainer)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Step Mode Controls
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.step_mode),
+                                color = WhiteText,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Switch(
+                                checked = state.isStepMode,
+                                onCheckedChange = { viewModel.onEvent(SearchingEvent.ToggleStepMode) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = YellowContainer,
+                                    checkedTrackColor = WhiteText,
+                                    uncheckedThumbColor = WhiteText,
+                                    uncheckedTrackColor = YellowContainer
+                                )
+                            )
+                        }
+
+                        if (state.isStepMode && state.totalSteps > 0) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            Text(
+                                text = stringResource(
+                                    R.string.step_progress,
+                                    state.currentStep,
+                                    state.totalSteps
+                                ),
+                                color = WhiteText,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Button(
+                                    onClick = { viewModel.onEvent(SearchingEvent.StepBackward) },
+                                    enabled = state.canStepBackward,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = YellowContainer,
+                                        contentColor = WhiteText
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(stringResource(R.string.previous_step))
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Button(
+                                    onClick = { viewModel.onEvent(SearchingEvent.StepForward) },
+                                    enabled = state.canStepForward,
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = YellowContainer,
+                                        contentColor = WhiteText
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(stringResource(R.string.next_step))
+                                }
+                            }
                         }
                     }
                 }

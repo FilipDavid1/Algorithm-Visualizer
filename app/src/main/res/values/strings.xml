@@ -76,6 +76,7 @@
     <string name="dividing_array">Dividing array from index %1$d to %2$d</string>
     <string name="single_element_at_index">Single element at index %1$d is sorted</string>
     <string name="sorting_completed">Sorting completed!</string>
+    <string name="press_search_to_start">Press search to start %1$s algorithm</string>
 
     <!-- Searching Algorithms -->
     <string name="searching_algorithms">Searching Algorithms</string>
@@ -120,4 +121,11 @@
     <string name="linear_search_uses">• Unsorted arrays\n• Small datasets\n• Simple implementation needed</string>
     <string name="binary_search_uses">• Sorted arrays\n• Large datasets\n• Frequent searches needed</string>
     <string name="jump_search_uses">• Sorted arrays\n• Skip unnecessary comparisons\n• Better than linear for medium-sized arrays</string>
+
+    <!-- Step Mode -->
+    <string name="step_mode">Step-by-Step Mode</string>
+    <string name="step_progress">Step %1$d of %2$d</string>
+    <string name="previous_step">Previous</string>
+    <string name="next_step">Next</string>
+    <string name="press_search_to_start">Press Search to start %1$s</string>
 </resources>
