@@ -127,5 +127,5 @@
     <string name="step_progress">Step %1$d of %2$d</string>
     <string name="previous_step">Previous</string>
     <string name="next_step">Next</string>
-    <string name="press_search_to_start">Press Search to start %1$s</string>
+    <string name="step_mode_ready">Steps collected. Use arrows to navigate.</string>
 </resources>

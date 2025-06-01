@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +32,7 @@ import com.example.algorithmvisualizer.ui.theme.yellowDropdownColors
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
 import com.example.algorithmvisualizer.ui.common.AlgorithmInfoScreen
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -331,145 +335,202 @@ fun SearchingScreen(
 
                     DashedDivider()
 
-                    // Control buttons
+                    // Step Mode Toggle
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Button(
-                            onClick = { viewModel.onEvent(SearchingEvent.StartSearching) },
-                            enabled = !state.isSearching && state.targetValue != null,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = YellowContainer,
-                                contentColor = WhiteText
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 2.dp,
-                                pressedElevation = 4.dp
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(stringResource(R.string.search))
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        Button(
-                            onClick = { viewModel.onEvent(SearchingEvent.StopSearching) },
-                            enabled = state.isSearching,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = YellowContainer,
-                                contentColor = WhiteText
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 2.dp,
-                                pressedElevation = 4.dp
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(stringResource(R.string.stop))
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        Button(
-                            onClick = { viewModel.onEvent(SearchingEvent.ResetData) },
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = YellowContainer,
-                                contentColor = WhiteText
-                            ),
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 2.dp,
-                                pressedElevation = 4.dp
-                            ),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(stringResource(R.string.reset))
-                        }
+                        Text(
+                            text = stringResource(R.string.step_mode),
+                            color = WhiteText,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Switch(
+                            checked = state.isStepMode,
+                            onCheckedChange = { viewModel.onEvent(SearchingEvent.ToggleStepMode) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = YellowContainer,
+                                checkedTrackColor = WhiteText,
+                                uncheckedThumbColor = WhiteText,
+                                uncheckedTrackColor = YellowContainer
+                            )
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    DashedDivider(color = YellowContainer)
-                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Step Mode Controls
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    if (state.isStepMode) {
+                        // Step-by-Step Controls
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (state.totalSteps > 0) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconButton(
+                                        onClick = { viewModel.onEvent(SearchingEvent.StepBackward) },
+                                        enabled = state.canStepBackward,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(
+                                                color = YellowContainer,
+                                                shape = RoundedCornerShape(12.dp)
+                                            )
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                            contentDescription = stringResource(R.string.previous_step),
+                                            tint = WhiteText,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .graphicsLayer(
+                                                    alpha = if (state.canStepBackward) 1f else 0.5f
+                                                )
+                                        )
+                                    }
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = stringResource(
+                                                R.string.step_progress,
+                                                state.currentStep,
+                                                state.totalSteps
+                                            ),
+                                            color = WhiteText,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+
+                                        LinearProgressIndicator(
+                                        progress = { state.currentStep.toFloat() / state.totalSteps.toFloat() },
+                                        modifier = Modifier
+                                                                                        .width(120.dp)
+                                                                                        .padding(top = 8.dp),
+                                        color = YellowContainer,
+                                        trackColor = WhiteText.copy(alpha = 0.3f),
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = { viewModel.onEvent(SearchingEvent.StepForward) },
+                                        enabled = state.canStepForward,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .background(
+                                                color = YellowContainer,
+                                                shape = RoundedCornerShape(12.dp)
+                                            )
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                            contentDescription = stringResource(R.string.next_step),
+                                            tint = WhiteText,
+                                            modifier = Modifier
+                                                .size(32.dp)
+                                                .graphicsLayer(
+                                                    alpha = if (state.canStepForward) 1f else 0.5f
+                                                )
+                                        )
+                                    }
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Button(
+                                        onClick = { viewModel.onEvent(SearchingEvent.StartSearching) },
+                                        enabled = !state.isSearching && state.targetValue != null,
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = YellowContainer,
+                                            contentColor = WhiteText
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(stringResource(R.string.search))
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Button(
+                                        onClick = { viewModel.onEvent(SearchingEvent.ResetData) },
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = YellowContainer,
+                                            contentColor = WhiteText
+                                        ),
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(stringResource(R.string.reset))
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Default Controls
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            Text(
-                                text = stringResource(R.string.step_mode),
-                                color = WhiteText,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Switch(
-                                checked = state.isStepMode,
-                                onCheckedChange = { viewModel.onEvent(SearchingEvent.ToggleStepMode) },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = YellowContainer,
-                                    checkedTrackColor = WhiteText,
-                                    uncheckedThumbColor = WhiteText,
-                                    uncheckedTrackColor = YellowContainer
-                                )
-                            )
-                        }
-
-                        if (state.isStepMode && state.totalSteps > 0) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            
-                            Text(
-                                text = stringResource(
-                                    R.string.step_progress,
-                                    state.currentStep,
-                                    state.totalSteps
+                            Button(
+                                onClick = { viewModel.onEvent(SearchingEvent.StartSearching) },
+                                enabled = !state.isSearching && state.targetValue != null,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = YellowContainer,
+                                    contentColor = WhiteText
                                 ),
-                                color = WhiteText,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 2.dp,
+                                    pressedElevation = 4.dp
+                                ),
+                                modifier = Modifier.weight(1f)
                             ) {
-                                Button(
-                                    onClick = { viewModel.onEvent(SearchingEvent.StepBackward) },
-                                    enabled = state.canStepBackward,
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = YellowContainer,
-                                        contentColor = WhiteText
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(stringResource(R.string.previous_step))
-                                }
+                                Text(stringResource(R.string.search))
+                            }
 
-                                Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                                Button(
-                                    onClick = { viewModel.onEvent(SearchingEvent.StepForward) },
-                                    enabled = state.canStepForward,
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = YellowContainer,
-                                        contentColor = WhiteText
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(stringResource(R.string.next_step))
-                                }
+                            Button(
+                                onClick = { viewModel.onEvent(SearchingEvent.StopSearching) },
+                                enabled = state.isSearching,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = YellowContainer,
+                                    contentColor = WhiteText
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 2.dp,
+                                    pressedElevation = 4.dp
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(stringResource(R.string.stop))
+                            }
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            Button(
+                                onClick = { viewModel.onEvent(SearchingEvent.ResetData) },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = YellowContainer,
+                                    contentColor = WhiteText
+                                ),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 2.dp,
+                                    pressedElevation = 4.dp
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(stringResource(R.string.reset))
                             }
                         }
                     }

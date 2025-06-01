@@ -8,7 +8,19 @@ data class SearchingState(
     val selectedAlgorithm: String = "",
     val targetValue: Int? = null,
     val comparisonMessage: String = "",
-    val elapsedTimeMs: Long = 0L
+    val elapsedTimeMs: Long = 0L,
+    val isStepMode: Boolean = false,
+    val currentStep: Int = 0,
+    val totalSteps: Int = 0,
+    val canStepForward: Boolean = false,
+    val canStepBackward: Boolean = false,
+    val stepHistory: List<SearchStep> = emptyList()
+)
+
+data class SearchStep(
+    val highlightedIndices: Set<Int>,
+    val comparisonMessage: String,
+    val foundIndex: Int?
 )
 
 sealed class SearchingAlgorithm {
@@ -34,4 +46,7 @@ sealed class SearchingEvent {
     data object StartSearching : SearchingEvent()
     data object StopSearching : SearchingEvent()
     data object ResetData : SearchingEvent()
+    data object ToggleStepMode : SearchingEvent()
+    data object StepForward : SearchingEvent()
+    data object StepBackward : SearchingEvent()
 }
