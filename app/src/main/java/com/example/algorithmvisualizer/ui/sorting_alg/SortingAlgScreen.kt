@@ -39,6 +39,7 @@ import androidx.compose.material3.MenuAnchorType
 import com.example.algorithmvisualizer.ui.theme.yellowDropdownColors
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
+import com.example.algorithmvisualizer.ui.common.AlgorithmInfoScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +53,40 @@ fun SortingListScreen(
     var showAlgorithmInfo by remember { mutableStateOf(false) }
 
     if (showAlgorithmInfo) {
+        val timeComplexity = when (state.selectedAlgorithm) {
+            stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_time)
+            stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_time)
+            stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_time)
+            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_time)
+            else -> ""
+        }
+        val spaceComplexity = when (state.selectedAlgorithm) {
+            stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_space)
+            stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_space)
+            stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_space)
+            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_space)
+            else -> ""
+        }
+        val logic = when (state.selectedAlgorithm) {
+            stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_logic)
+            stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_logic)
+            stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_logic)
+            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_logic)
+            else -> ""
+        }
+        val useCases = when (state.selectedAlgorithm) {
+            stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_uses)
+            stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_uses)
+            stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_uses)
+            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_uses)
+            else -> ""
+        }
         AlgorithmInfoScreen(
             algorithm = state.selectedAlgorithm,
+            timeComplexity = timeComplexity,
+            spaceComplexity = spaceComplexity,
+            algorithmLogic = logic,
+            useCases = useCases,
             onDismiss = { showAlgorithmInfo = false }
         )
     } else {
@@ -380,158 +413,6 @@ fun ColumnChart(
                 ),
                 alpha = if (isHighlighted) 1f else 0.8f
             )
-        }
-    }
-}
-
-@Composable
-fun AlgorithmInfoScreen(
-    algorithm: String,
-    onDismiss: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BlueContainer)
-            .padding(16.dp)
-    ) {
-        // Header with back button
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onDismiss,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = YellowContainer,
-                    contentColor = WhiteText
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-            Text(
-                text = algorithm,
-                style = MaterialTheme.typography.headlineMedium,
-                color = WhiteText,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.width(48.dp)) // For balance
-        }
-
-        // Content
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            colors = CardDefaults.cardColors(containerColor = YellowContainer)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Time Complexity Section
-                Text(
-                    text = stringResource(R.string.time_complexity),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = WhiteText,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                val timeComplexity = when (algorithm) {
-                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_time)
-                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_time)
-                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_time)
-                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_time)
-                    else -> ""
-                }
-                Text(
-                    text = timeComplexity,
-                    color = WhiteText,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                DashedDivider(color = BlueContainer)
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Space Complexity Section
-                Text(
-                    text = stringResource(R.string.space_complexity),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = WhiteText,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                val spaceComplexity = when (algorithm) {
-                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_space)
-                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_space)
-                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_space)
-                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_space)
-                    else -> ""
-                }
-                Text(
-                    text = spaceComplexity,
-                    color = WhiteText,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                DashedDivider(color = BlueContainer)
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Algorithm Logic Section
-                Text(
-                    text = stringResource(R.string.algorithm_logic),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = WhiteText,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                val logic = when (algorithm) {
-                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_logic)
-                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_logic)
-                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_logic)
-                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_logic)
-                    else -> ""
-                }
-                Text(
-                    text = logic,
-                    color = WhiteText,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-                DashedDivider(color = BlueContainer)
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Use Cases Section
-                Text(
-                    text = stringResource(R.string.best_use_cases),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = WhiteText,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                val useCases = when (algorithm) {
-                    stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_uses)
-                    stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_uses)
-                    stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_uses)
-                    stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_uses)
-                    else -> ""
-                }
-                Text(
-                    text = useCases,
-                    color = WhiteText,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
-            }
         }
     }
 }

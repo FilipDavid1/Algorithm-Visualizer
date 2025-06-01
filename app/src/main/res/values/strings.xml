@@ -95,4 +95,29 @@
     <string name="jumping_to_block">Jumping to block %1$d</string>
     <string name="linear_scanning">Linear scanning at index %1$d</string>
     <string name="time_elapsed">Time: %.1fs</string>
+
+    <!-- Searching Algorithm Descriptions -->
+    <string name="linear_search_desc">Linear Search sequentially checks each element in the array until a match is found or the end of array is reached.</string>
+    <string name="binary_search_desc">Binary Search repeatedly divides the sorted array in half and compares the middle element with the target value.</string>
+    <string name="jump_search_desc">Jump Search works on sorted arrays by jumping fixed steps to find a block where the element may be present, then performing linear search.</string>
+
+    <!-- Searching Time Complexities -->
+    <string name="linear_search_time">Best: O(1)\nAverage: O(n)\nWorst: O(n)</string>
+    <string name="binary_search_time">Best: O(1)\nAverage: O(log n)\nWorst: O(log n)</string>
+    <string name="jump_search_time">Best: O(1)\nAverage: O(√n)\nWorst: O(√n)</string>
+
+    <!-- Searching Space Complexities -->
+    <string name="linear_search_space">O(1)</string>
+    <string name="binary_search_space">O(1)</string>
+    <string name="jump_search_space">O(1)</string>
+
+    <!-- Searching Algorithm Logic Steps -->
+    <string name="linear_search_logic">1. Start from first element\n2. Compare with target value\n3. If match found, return index\n4. If not found, move to next element\n5. Repeat until found or end reached</string>
+    <string name="binary_search_logic">1. Find middle element\n2. Compare with target value\n3. If match found, return index\n4. If target is smaller, search left half\n5. If target is larger, search right half</string>
+    <string name="jump_search_logic">1. Choose block size (√n)\n2. Jump fixed steps ahead\n3. Find block where element may exist\n4. Perform linear search in that block\n5. Return if found, else not present</string>
+
+    <!-- Searching Algorithm Use Cases -->
+    <string name="linear_search_uses">• Unsorted arrays\n• Small datasets\n• Simple implementation needed</string>
+    <string name="binary_search_uses">• Sorted arrays\n• Large datasets\n• Frequent searches needed</string>
+    <string name="jump_search_uses">• Sorted arrays\n• Skip unnecessary comparisons\n• Better than linear for medium-sized arrays</string>
 </resources>
