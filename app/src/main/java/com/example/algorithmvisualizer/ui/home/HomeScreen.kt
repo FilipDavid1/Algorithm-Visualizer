@@ -10,6 +10,8 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,15 +21,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.algorithmvisualizer.Routes
 import com.example.algorithmvisualizer.ui.theme.BlueContainer
 import com.example.algorithmvisualizer.ui.theme.WhiteText
 import com.example.algorithmvisualizer.ui.theme.YellowContainer
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
+import com.example.algorithmvisualizer.ui.sorting_alg.SortingListViewModel
+import com.example.algorithmvisualizer.ui.searching_alg.SearchingListViewModel
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(
+    navController: NavHostController,
+    sortingViewModel: SortingListViewModel = viewModel(),
+    searchingViewModel: SearchingListViewModel = viewModel()
+) {
+    val sortingAlgorithms by sortingViewModel.algorithms.collectAsState()
+    val searchingAlgorithms by searchingViewModel.algorithms.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,11 +67,10 @@ fun HomeScreen(navController: NavHostController) {
             )
         }
 
-
         AlgorithmCategoryCard(
             title = stringResource(R.string.sorting_algorithms_title),
             description = stringResource(R.string.sorting_algorithms_desc),
-            count = 6,
+            count = sortingAlgorithms.size,
             icon = Icons.AutoMirrored.Filled.Sort,
         ) { navController.navigate(Routes.SORTING) }
 
@@ -68,7 +79,7 @@ fun HomeScreen(navController: NavHostController) {
         AlgorithmCategoryCard(
             title = stringResource(R.string.searching_algorithms_title),
             description = stringResource(R.string.searching_algorithms_desc),
-            count = 3,
+            count = searchingAlgorithms.size,
             iconOnRight = true,
             icon = Icons.Default.Search,
         ) { navController.navigate(Routes.SEARCHING) }
