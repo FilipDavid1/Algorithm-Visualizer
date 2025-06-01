@@ -8,14 +8,26 @@ data class SortingState(
     val selectedAlgorithm: String = "Bubble Sort",
     val animationSpeed: Float = 1f,
     val comparisonMessage: String = "",
-    val elapsedTimeMs: Long = 0
+    val elapsedTimeMs: Long = 0,
+    val isStepMode: Boolean = false,
+    val currentStep: Int = 0,
+    val totalSteps: Int = 0,
+    val canStepForward: Boolean = false,
+    val canStepBackward: Boolean = false,
+    val stepHistory: List<StepState> = emptyList()
+)
+
+data class StepState(
+    val data: List<Int>,
+    val highlightedIndices: Set<Int>,
+    val sortedIndices: Set<Int>,
+    val comparisonMessage: String
 )
 
 sealed class SortingAlgorithm {
     object BubbleSort : SortingAlgorithm()
     object SelectionSort : SortingAlgorithm()
     object InsertionSort : SortingAlgorithm()
-    object MergeSort : SortingAlgorithm()
 
     companion object {
         fun fromString(name: String): SortingAlgorithm {
@@ -23,7 +35,6 @@ sealed class SortingAlgorithm {
                 "Bubble Sort" -> BubbleSort
                 "Selection Sort" -> SelectionSort
                 "Insertion Sort" -> InsertionSort
-                "Merge Sort" -> MergeSort
                 else -> BubbleSort
             }
         }
@@ -35,4 +46,7 @@ sealed class SortingEvent {
     object StartSorting : SortingEvent()
     object StopSorting : SortingEvent()
     object ResetData : SortingEvent()
+    object ToggleStepMode : SortingEvent()
+    object StepForward : SortingEvent()
+    object StepBackward : SortingEvent()
 }

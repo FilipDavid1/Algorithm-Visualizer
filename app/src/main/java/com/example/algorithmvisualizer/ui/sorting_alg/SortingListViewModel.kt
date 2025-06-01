@@ -7,6 +7,7 @@ import com.example.algorithmvisualizer.R
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingAlgorithm
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingState
+import com.example.algorithmvisualizer.ui.sorting_alg.model.StepState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,13 +20,13 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
     private val initialData = listOf(8, 3, 5, 4, 7, 1, 6, 2)
     private var startTime: Long = 0
     private var timerJob: Job? = null
+    private var currentStepIndex = 0
 
     private val _algorithms = MutableStateFlow(
         listOf(
             getApplication<Application>().getString(R.string.bubble_sort),
             getApplication<Application>().getString(R.string.selection_sort),
             getApplication<Application>().getString(R.string.insertion_sort),
-            getApplication<Application>().getString(R.string.merge_sort),
         )
     )
     val algorithms: StateFlow<List<String>> = _algorithms.asStateFlow()
@@ -59,12 +60,71 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
             is SortingEvent.ResetData -> {
                 resetData()
             }
+            is SortingEvent.ToggleStepMode -> {
+                _state.update { it.copy(
+                    isStepMode = !it.isStepMode,
+                    currentStep = 0,
+                    totalSteps = 0,
+                    stepHistory = emptyList(),
+                    canStepForward = false,
+                    canStepBackward = false
+                )}
+            }
+            is SortingEvent.StepForward -> {
+                if (currentStepIndex < state.value.stepHistory.lastIndex) {
+                    currentStepIndex++
+                    applyStep(currentStepIndex)
+                }
+            }
+            is SortingEvent.StepBackward -> {
+                if (currentStepIndex > 0) {
+                    currentStepIndex--
+                    applyStep(currentStepIndex)
+                }
+            }
+        }
+    }
+
+    private fun applyStep(index: Int) {
+        val step = state.value.stepHistory[index]
+        _state.update { it.copy(
+            data = step.data,
+            highlightedIndices = step.highlightedIndices,
+            sortedIndices = step.sortedIndices,
+            comparisonMessage = step.comparisonMessage,
+            currentStep = index + 1,
+            canStepForward = index < state.value.stepHistory.lastIndex,
+            canStepBackward = index > 0
+        )}
+    }
+
+    private fun addStep(
+        data: List<Int>,
+        highlightedIndices: Set<Int>,
+        sortedIndices: Set<Int>,
+        comparisonMessage: String
+    ) {
+        if (!state.value.isStepMode) return
+
+        val step = StepState(
+            data = data,
+            highlightedIndices = highlightedIndices,
+            sortedIndices = sortedIndices,
+            comparisonMessage = comparisonMessage
+        )
+
+        _state.update { currentState ->
+            currentState.copy(
+                stepHistory = currentState.stepHistory + step,
+                totalSteps = currentState.stepHistory.size + 1
+            )
         }
     }
 
     private fun startSorting() {
         sortingJob?.cancel()
         timerJob?.cancel()
+        currentStepIndex = 0
 
         startTime = System.currentTimeMillis()
 
@@ -79,21 +139,29 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         sortingJob = viewModelScope.launch {
-            _state.update { it.copy(isSorting = true, sortedIndices = emptySet()) }
+            _state.update { it.copy(
+                isSorting = true,
+                sortedIndices = emptySet(),
+                stepHistory = if (it.isStepMode) emptyList() else it.stepHistory
+            )}
+
             when (SortingAlgorithm.fromString(state.value.selectedAlgorithm)) {
                 is SortingAlgorithm.BubbleSort -> bubbleSort()
                 is SortingAlgorithm.SelectionSort -> selectionSort()
                 is SortingAlgorithm.InsertionSort -> insertionSort()
-                is SortingAlgorithm.MergeSort -> mergeSort()
             }
+
             val endTime = System.currentTimeMillis()
-            timerJob?.cancel() // Stop timer updates
-            _state.update { it.copy(
-                isSorting = false,
-                highlightedIndices = emptySet(),
-                sortedIndices = (0 until state.value.data.size).toSet(),
-                elapsedTimeMs = endTime - startTime
-            )}
+            timerJob?.cancel()
+
+            if (!state.value.isStepMode) {
+                _state.update { it.copy(
+                    isSorting = false,
+                    highlightedIndices = emptySet(),
+                    sortedIndices = (0 until state.value.data.size).toSet(),
+                    elapsedTimeMs = endTime - startTime
+                )}
+            }
         }
     }
 
@@ -106,16 +174,22 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
             isSorting = false,
             highlightedIndices = emptySet(),
             elapsedTimeMs = System.currentTimeMillis() - startTime
-        ) }
+        )}
     }
 
     private fun resetData() {
         stopSorting()
+        currentStepIndex = 0
         _state.update { it.copy(
             data = initialData,
             sortedIndices = emptySet(),
             comparisonMessage = "",
-            elapsedTimeMs = 0
+            elapsedTimeMs = 0,
+            stepHistory = emptyList(),
+            totalSteps = 0,
+            currentStep = 0,
+            canStepForward = false,
+            canStepBackward = false
         )}
     }
 
@@ -138,8 +212,9 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 _state.update { it.copy(
                     highlightedIndices = setOf(j, j + 1),
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], data[j + 1])
-                ) }
-                delay(500)
+                )}
+                addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
+                if (!state.value.isStepMode) delay(500)
 
                 if (data[j] > data[j + 1]) {
                     val temp = data[j]
@@ -149,15 +224,31 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     _state.update { it.copy(
                         data = data.toList(),
                         comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
-                    ) }
+                    )}
+                    addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
+                    if (!state.value.isStepMode) delay(500)
                 }
             }
             sortedIndices.add(n - i - 1)
             _state.update { it.copy(
                 sortedIndices = sortedIndices.toSet(),
-                comparisonMessage = if (i < n - 1) getApplication<Application>().getString(R.string.pass_completed, i + 1) else getApplication<Application>().getString(R.string.sorting_completed)
-            ) }
+                comparisonMessage = if (i < n - 1) 
+                    getApplication<Application>().getString(R.string.pass_completed, i + 1) 
+                else 
+                    getApplication<Application>().getString(R.string.sorting_completed)
+            )}
+            addStep(data.toList(), emptySet(), sortedIndices.toSet(), state.value.comparisonMessage)
+            if (!state.value.isStepMode) delay(500)
             if (!swapped) break
+        }
+
+        if (state.value.isStepMode) {
+            applyStep(0)
+            _state.update { it.copy(
+                isSorting = false,
+                canStepForward = true,
+                canStepBackward = false
+            )}
         }
     }
 
@@ -174,8 +265,9 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 _state.update { it.copy(
                     highlightedIndices = setOf(minIdx, j),
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[minIdx], data[j])
-                ) }
-                delay(500)
+                )}
+                addStep(data.toList(), setOf(minIdx, j), sortedIndices.toSet(), state.value.comparisonMessage)
+                if (!state.value.isStepMode) delay(500)
 
                 if (data[j] < data[minIdx]) {
                     minIdx = j
@@ -190,12 +282,25 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 sortedIndices = sortedIndices.toSet(),
                 comparisonMessage = getApplication<Application>().getString(R.string.moved_smallest_element, data[i], i)
             )}
+            addStep(data.toList(), setOf(i, minIdx), sortedIndices.toSet(), state.value.comparisonMessage)
+            if (!state.value.isStepMode) delay(500)
         }
+        
         sortedIndices.add(n - 1)
         _state.update { it.copy(
             sortedIndices = sortedIndices.toSet(),
             comparisonMessage = getApplication<Application>().getString(R.string.sorting_completed)
-        ) }
+        )}
+        addStep(data.toList(), emptySet(), sortedIndices.toSet(), state.value.comparisonMessage)
+
+        if (state.value.isStepMode) {
+            applyStep(0)
+            _state.update { it.copy(
+                isSorting = false,
+                canStepForward = true,
+                canStepBackward = false
+            )}
+        }
     }
 
     private suspend fun insertionSort() {
@@ -212,7 +317,8 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 highlightedIndices = setOf(i),
                 comparisonMessage = getApplication<Application>().getString(R.string.inserting_element, key)
             )}
-            delay(500)
+            addStep(data.toList(), setOf(i), sortedIndices.toSet(), state.value.comparisonMessage)
+            if (!state.value.isStepMode) delay(500)
 
             while (j >= 0 && data[j] > key) {
                 if (!state.value.isSorting) return
@@ -221,7 +327,8 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     highlightedIndices = setOf(j, j + 1),
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], key)
                 )}
-                delay(500)
+                addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
+                if (!state.value.isStepMode) delay(500)
 
                 val temp = data[j + 1]
                 data[j + 1] = data[j]
@@ -231,7 +338,8 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     data = data.toList(),
                     comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
                 )}
-                delay(500)
+                addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
+                if (!state.value.isStepMode) delay(500)
                 
                 j--
             }
@@ -246,7 +354,8 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 highlightedIndices = setOf(j + 1),
                 comparisonMessage = getApplication<Application>().getString(R.string.inserted_element, key)
             )}
-            delay(500)
+            addStep(data.toList(), setOf(j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
+            if (!state.value.isStepMode) delay(500)
         }
 
         _state.update { it.copy(
@@ -254,134 +363,16 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
             highlightedIndices = emptySet(),
             comparisonMessage = getApplication<Application>().getString(R.string.sorting_completed)
         )}
+        addStep(data.toList(), emptySet(), (0 until n).toSet(), state.value.comparisonMessage)
+
+        if (state.value.isStepMode) {
+            applyStep(0)
+            _state.update { it.copy(
+                isSorting = false,
+                canStepForward = true,
+                canStepBackward = false
+            )}
+        }
     }
 
-    private suspend fun mergeSort() {
-        val data = state.value.data.toMutableList()
-        val sortedRanges = mutableSetOf<Int>()
-
-        suspend fun merge(left: Int, mid: Int, right: Int) {
-            _state.update {
-                it.copy(
-                    comparisonMessage = getApplication<Application>().getString(
-                        R.string.merging_subarrays,
-                        left,
-                        right
-                    )
-                )
-            }
-
-            val leftArray = data.subList(left, mid + 1).toMutableList()
-            val rightArray = data.subList(mid + 1, right + 1).toMutableList()
-
-            var i = 0
-            var j = 0
-            var k = left
-
-            while (i < leftArray.size && j < rightArray.size) {
-                if (!state.value.isSorting) return
-
-                _state.update {
-                    it.copy(
-                        highlightedIndices = setOf(k, left + i, mid + 1 + j),
-                        comparisonMessage = getApplication<Application>().getString(
-                            R.string.comparing_elements,
-                            leftArray[i],
-                            rightArray[j]
-                        )
-                    )
-                }
-                delay(1000)
-
-                if (leftArray[i] <= rightArray[j]) {
-                    data[k] = leftArray[i]
-                    i++
-                } else {
-                    data[k] = rightArray[j]
-                    j++
-                }
-                k++
-                _state.update {
-                    it.copy(
-                        data = data.toList(),
-                        comparisonMessage = getApplication<Application>().getString(
-                            R.string.placed_smaller_element,
-                            data[k]
-                        )
-                    )
-                }
-            }
-
-            while (i < leftArray.size) {
-                if (!state.value.isSorting) return
-                data[k] = leftArray[i]
-                i++
-                k++
-                _state.update {
-                    it.copy(
-                        data = data.toList(),
-                        comparisonMessage = getApplication<Application>().getString(R.string.copying_remaining_elements_from_left_subarray)
-                    )
-                }
-            }
-
-            while (j < rightArray.size) {
-                if (!state.value.isSorting) return
-                data[k] = rightArray[j]
-                j++
-                k++
-                _state.update {
-                    it.copy(
-                        data = data.toList(),
-                        comparisonMessage = getApplication<Application>().getString(R.string.copying_remaining_elements_from_right_subarray)
-                    )
-                }
-            }
-
-            for (idx in left..right) {
-                sortedRanges.add(idx)
-            }
-            _state.update {
-                it.copy(
-                    sortedIndices = sortedRanges.toSet(),
-                    comparisonMessage = getApplication<Application>().getString(
-                        R.string.merged_subarray,
-                        left,
-                        right
-                    )
-                )
-            }
-        }
-
-        suspend fun mergeSortRecursive(left: Int, right: Int) {
-            if (left < right) {
-                val mid = (left + right) / 2
-                _state.update {
-                    it.copy(
-                        comparisonMessage = getApplication<Application>().getString(
-                            R.string.dividing_array,
-                            left,
-                            right
-                        )
-                    )
-                }
-                mergeSortRecursive(left, mid)
-                mergeSortRecursive(mid + 1, right)
-                merge(left, mid, right)
-            } else if (left == right) {
-                sortedRanges.add(left)
-                _state.update {
-                    it.copy(
-                        sortedIndices = sortedRanges.toSet(),
-                        comparisonMessage = getApplication<Application>().getString(
-                            R.string.single_element_at_index,
-                            left
-                        )
-                    )
-                }
-            }
-        }
-
-        mergeSortRecursive(0, data.size - 1)
-    }
 }

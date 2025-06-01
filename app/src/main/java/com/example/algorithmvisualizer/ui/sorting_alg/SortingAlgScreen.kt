@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -57,28 +59,24 @@ fun SortingListScreen(
             stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_time)
             stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_time)
             stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_time)
-            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_time)
             else -> ""
         }
         val spaceComplexity = when (state.selectedAlgorithm) {
             stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_space)
             stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_space)
             stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_space)
-            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_space)
             else -> ""
         }
         val logic = when (state.selectedAlgorithm) {
             stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_logic)
             stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_logic)
             stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_logic)
-            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_logic)
             else -> ""
         }
         val useCases = when (state.selectedAlgorithm) {
             stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_uses)
             stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_uses)
             stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_uses)
-            stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_uses)
             else -> ""
         }
         AlgorithmInfoScreen(
@@ -261,7 +259,6 @@ fun SortingListScreen(
                                 stringResource(R.string.bubble_sort) -> stringResource(R.string.bubble_sort_desc)
                                 stringResource(R.string.selection_sort) -> stringResource(R.string.selection_sort_desc)
                                 stringResource(R.string.insertion_sort) -> stringResource(R.string.insertion_sort_desc)
-                                stringResource(R.string.merge_sort) -> stringResource(R.string.merge_sort_desc)
                                 else -> ""
                             }
 
@@ -313,66 +310,216 @@ fun SortingListScreen(
                 }
             }
 
-            // Buttons
+            // Step Mode Toggle
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    onClick = { viewModel.onEvent(SortingEvent.StartSorting) },
-                    enabled = !state.isSorting,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = YellowContainer,
-                        contentColor = WhiteText
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp
-                    ),
-                    modifier = Modifier.weight(1f)
+                Text(
+                    text = stringResource(R.string.step_mode),
+                    color = BlueContainer,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Switch(
+                    checked = state.isStepMode,
+                    onCheckedChange = { viewModel.onEvent(SortingEvent.ToggleStepMode) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = WhiteText,
+                        checkedTrackColor = BlueContainer,
+                        uncheckedThumbColor = WhiteText,
+                        uncheckedTrackColor = YellowContainer
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (state.isStepMode) {
+                // Step-by-Step Controls
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(stringResource(R.string.sort_button))
+                    if (state.totalSteps > 0) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = { viewModel.onEvent(SortingEvent.StepBackward) },
+                                enabled = state.canStepBackward,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        color = if (state.canStepBackward) YellowContainer else YellowContainer.copy(alpha = 0.5f),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                                    contentDescription = stringResource(R.string.previous_step),
+                                    tint = WhiteText,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                )
+                            }
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.step_progress,
+                                        state.currentStep,
+                                        state.totalSteps
+                                    ),
+                                    color = WhiteText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                LinearProgressIndicator(
+                                    progress = { state.currentStep.toFloat() / state.totalSteps.toFloat() },
+                                    modifier = Modifier
+                                        .width(160.dp)
+                                        .height(6.dp),
+                                    color = YellowContainer,
+                                    trackColor = BlueContainer.copy(alpha = 0.2f)
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { viewModel.onEvent(SortingEvent.StepForward) },
+                                enabled = state.canStepForward,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        color = if (state.canStepForward) YellowContainer else YellowContainer.copy(alpha = 0.5f),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    contentDescription = stringResource(R.string.next_step),
+                                    tint = WhiteText,
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Button(
+                                onClick = { viewModel.onEvent(SortingEvent.StartSorting) },
+                                enabled = !state.isSorting,
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = YellowContainer,
+                                    contentColor = WhiteText,
+                                    disabledContainerColor = YellowContainer.copy(alpha = 0.5f),
+                                    disabledContentColor = WhiteText.copy(alpha = 0.5f)
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.sort_button),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Button(
+                                onClick = { viewModel.onEvent(SortingEvent.ResetData) },
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = YellowContainer,
+                                    contentColor = WhiteText
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.reset_button),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Button(
-                    onClick = { viewModel.onEvent(SortingEvent.StopSorting) },
-                    enabled = state.isSorting,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = YellowContainer,
-                        contentColor = WhiteText
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp
-                    ),
-                    modifier = Modifier.weight(1f)
+            } else {
+                // Default Controls
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text(stringResource(R.string.stop_button))
-                }
+                    Button(
+                        onClick = { viewModel.onEvent(SortingEvent.StartSorting) },
+                        enabled = !state.isSorting,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = YellowContainer,
+                            contentColor = WhiteText
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 2.dp,
+                            pressedElevation = 4.dp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.sort_button))
+                    }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Button(
-                    onClick = { viewModel.onEvent(SortingEvent.ResetData) },
-                    enabled = !state.isSorting,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = YellowContainer,
-                        contentColor = WhiteText
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp
-                    ),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(stringResource(R.string.reset_button))
+                    Button(
+                        onClick = { viewModel.onEvent(SortingEvent.StopSorting) },
+                        enabled = state.isSorting,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = YellowContainer,
+                            contentColor = WhiteText
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 2.dp,
+                            pressedElevation = 4.dp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.stop_button))
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Button(
+                        onClick = { viewModel.onEvent(SortingEvent.ResetData) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = YellowContainer,
+                            contentColor = WhiteText
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 2.dp,
+                            pressedElevation = 4.dp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.reset_button))
+                    }
                 }
             }
         }
