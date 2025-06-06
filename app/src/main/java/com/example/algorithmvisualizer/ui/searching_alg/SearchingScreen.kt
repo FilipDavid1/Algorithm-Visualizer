@@ -33,6 +33,11 @@ import com.example.algorithmvisualizer.ui.utility.DashedDivider
 import com.example.algorithmvisualizer.ui.common.AlgorithmInfoScreen
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -223,6 +228,7 @@ fun SearchingScreen(
                     DashedDivider()
 
                     // Target value input
+                    val focusManager = LocalFocusManager.current
                     TextField(
                         value = state.targetValue?.toString() ?: "",
                         onValueChange = { value ->
@@ -234,6 +240,15 @@ fun SearchingScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = YellowContainer,
                             unfocusedContainerColor = YellowContainer,
