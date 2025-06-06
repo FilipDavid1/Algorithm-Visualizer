@@ -30,6 +30,8 @@ import com.example.algorithmvisualizer.ui.theme.YellowContainer
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
 import com.example.algorithmvisualizer.ui.sorting_alg.SortingListViewModel
 import com.example.algorithmvisualizer.ui.searching_alg.SearchingListViewModel
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 @Composable
 fun HomeScreen(
@@ -39,11 +41,13 @@ fun HomeScreen(
 ) {
     val sortingAlgorithms by sortingViewModel.algorithms.collectAsState()
     val searchingAlgorithms by searchingViewModel.algorithms.collectAsState()
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
         // Header Card

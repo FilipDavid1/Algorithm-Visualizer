@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -53,6 +55,7 @@ fun SortingListScreen(
     val algorithms by viewModel.algorithms.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     var showAlgorithmInfo by remember { mutableStateOf(false) }
+    var scrollState = rememberScrollState()
 
     if (showAlgorithmInfo) {
         val timeComplexity = when (state.selectedAlgorithm) {
@@ -91,6 +94,7 @@ fun SortingListScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             // Header Card
             Card(
@@ -135,7 +139,6 @@ fun SortingListScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
                     .padding(bottom = 16.dp),
                 shape = RoundedCornerShape(0.dp),
                 colors = CardDefaults.cardColors(containerColor = BlueContainer),
@@ -198,7 +201,6 @@ fun SortingListScreen(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f)
                             .padding(vertical = 16.dp),
                         colors = CardDefaults.cardColors(containerColor = BlueContainer)
                     ) {
@@ -210,8 +212,8 @@ fun SortingListScreen(
                                 highlightedIndices = state.highlightedIndices,
                                 sortedIndices = state.sortedIndices,
                                 modifier = Modifier
-                                    .weight(1f)
                                     .fillMaxWidth()
+                                    .height(150.dp)
                                     .padding(16.dp)
                             )
 

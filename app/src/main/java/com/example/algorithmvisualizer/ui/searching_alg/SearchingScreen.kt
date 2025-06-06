@@ -4,7 +4,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -50,6 +52,7 @@ fun SearchingScreen(
     val algorithms by viewModel.algorithms.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     var showAlgorithmInfo by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     if (showAlgorithmInfo) {
         val timeComplexity = when (state.selectedAlgorithm) {
@@ -86,7 +89,9 @@ fun SearchingScreen(
         )
     } else {
         Column(
-            modifier = modifier.fillMaxSize()
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
             // Header Card
             Card(
@@ -130,8 +135,7 @@ fun SearchingScreen(
 
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(0.dp),
                 colors = CardDefaults.cardColors(containerColor = BlueContainer),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
