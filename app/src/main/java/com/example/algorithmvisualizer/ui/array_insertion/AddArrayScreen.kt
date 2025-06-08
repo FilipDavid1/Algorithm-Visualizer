@@ -44,6 +44,7 @@ fun AddArrayScreen(
     val errorColor = Color(0xFFFF6B6B)
     val invalidInputMessage = stringResource(R.string.invalid_input)
     val arraySizeErrorMessage = stringResource(R.string.array_size_error)
+    val maxArraySize = 100
 
     fun validateAndUpdateSize(newSize: String) {
         arraySize = newSize
@@ -56,6 +57,10 @@ fun AddArrayScreen(
             size <= 0 -> {
                 showError = true
                 errorMessage = arraySizeErrorMessage
+            }
+            size > maxArraySize -> {
+                showError = true
+                errorMessage = "Maximum array size is $maxArraySize"
             }
             else -> {
                 numbers = List(size) { Random.nextInt(1, 100) }
