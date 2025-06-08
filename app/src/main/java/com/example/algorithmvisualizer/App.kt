@@ -2,6 +2,7 @@ package com.example.algorithmvisualizer
 
 import android.app.Application
 import android.content.Context
+import com.google.firebase.FirebaseApp
 
 class App : Application() {
     companion object {
@@ -19,5 +20,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        FirebaseApp.initializeApp(this)
     }
 } 
