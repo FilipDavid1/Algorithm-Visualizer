@@ -1,4 +1,4 @@
-package com.example.algorithmvisualizer.ui
+package com.example.algorithmvisualizer.ui.array_insertion
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

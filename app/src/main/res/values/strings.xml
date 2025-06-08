@@ -126,4 +126,13 @@
 
     <!-- Arrays Section -->
     <string name="arrays_title">Add custom array</string>
+    <string name="invalid_input">Please enter a valid number</string>
+    <string name="array_size_error">Array size must be greater than 0</string>
+    <string name="navigate_back">Navigate back</string>
+    <string name="add_new_array">Add New Array</string>
+    <string name="array_size">Array Size</string>
+    <string name="generate_new_numbers">Generate new numbers</string>
+    <string name="generate_new">Generate new</string>
+    <string name="save_array">Save array</string>
+    <string name="array_preview">Array Preview</string>
 </resources>

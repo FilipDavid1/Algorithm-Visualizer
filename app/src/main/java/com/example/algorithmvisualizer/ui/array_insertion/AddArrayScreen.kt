@@ -1,10 +1,12 @@
-package com.example.algorithmvisualizer.ui
+package com.example.algorithmvisualizer.ui.array_insertion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -14,9 +16,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.algorithmvisualizer.R
 import com.example.algorithmvisualizer.ui.theme.*
 import kotlin.random.Random
 
@@ -31,6 +38,8 @@ fun AddArrayScreen(
     var errorMessage by remember { mutableStateOf("") }
 
     val errorColor = Color(0xFFFF6B6B)
+    val invalidInputMessage = stringResource(R.string.invalid_input)
+    val arraySizeErrorMessage = stringResource(R.string.array_size_error)
 
     fun validateAndUpdateSize(newSize: String) {
         arraySize = newSize
@@ -38,11 +47,11 @@ fun AddArrayScreen(
         when {
             size == null -> {
                 showError = true
-                errorMessage = "Please enter a valid number"
+                errorMessage = invalidInputMessage
             }
             size <= 0 -> {
                 showError = true
-                errorMessage = "Array size must be greater than 0"
+                errorMessage = arraySizeErrorMessage
             }
             else -> {
                 numbers = List(size) { Random.nextInt(1, 100) }
@@ -82,11 +91,11 @@ fun AddArrayScreen(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back"
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
                 }
                 Text(
-                    text = "Add New Array",
+                    text = stringResource(R.string.add_new_array),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = WhiteText
@@ -107,11 +116,12 @@ fun AddArrayScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Array Size",
+                    text = stringResource(R.string.array_size),
                     style = MaterialTheme.typography.titleMedium,
                     color = WhiteText,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+                val focusManager = LocalFocusManager.current
                 OutlinedTextField(
                     value = arraySize,
                     onValueChange = { validateAndUpdateSize(it) },
@@ -124,8 +134,14 @@ fun AddArrayScreen(
                         errorBorderColor = errorColor,
                         errorTextColor = errorColor
                     ),
-                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
                     ),
                     isError = showError
                 )
@@ -166,9 +182,9 @@ fun AddArrayScreen(
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Generate new numbers")
+                    Icon(Icons.Default.Refresh, contentDescription = stringResource(R.string.generate_new_numbers))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Generate New")
+                    Text(stringResource(R.string.generate_new))
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -181,7 +197,7 @@ fun AddArrayScreen(
                             onNavigateBack()
                         } else {
                             showError = true
-                            errorMessage = if (size == null) "Please enter a valid number" else "Array size must be greater than 0"
+                            errorMessage = if (size == null) invalidInputMessage else arraySizeErrorMessage
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -189,9 +205,9 @@ fun AddArrayScreen(
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Save array")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.save_array))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Save Array")
+                    Text(stringResource(R.string.save_array))
                 }
             }
         }
@@ -206,7 +222,7 @@ fun AddArrayScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Array Preview",
+                    text = stringResource(R.string.array_preview),
                     style = MaterialTheme.typography.titleMedium,
                     color = WhiteText,
                     modifier = Modifier.padding(bottom = 16.dp)

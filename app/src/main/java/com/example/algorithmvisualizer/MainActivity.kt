@@ -15,7 +15,7 @@ import com.example.algorithmvisualizer.ui.home.HomeScreen
 import com.example.algorithmvisualizer.ui.searching_alg.SearchingScreen
 import com.example.algorithmvisualizer.ui.sorting_alg.SortingListScreen
 import com.example.algorithmvisualizer.ui.theme.AlgorithmVisualizerTheme
-import com.example.algorithmvisualizer.ui.AddArrayScreen
+import com.example.algorithmvisualizer.ui.array_insertion.AddArrayScreen
 
 object Routes {
     const val HOME = "home"
