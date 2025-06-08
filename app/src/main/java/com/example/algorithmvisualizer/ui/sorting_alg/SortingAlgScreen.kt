@@ -42,8 +42,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MenuAnchorType
 import com.example.algorithmvisualizer.ui.theme.yellowDropdownColors
 import com.example.algorithmvisualizer.ui.utility.DashedDivider
-import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 import com.example.algorithmvisualizer.ui.common.AlgorithmInfoScreen
+import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

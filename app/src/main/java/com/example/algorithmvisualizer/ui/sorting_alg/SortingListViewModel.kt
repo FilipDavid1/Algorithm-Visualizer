@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.algorithmvisualizer.R
+import com.example.algorithmvisualizer.data.ArrayRepository
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingAlgorithm
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingEvent
 import com.example.algorithmvisualizer.ui.sorting_alg.model.SortingState
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SortingListViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ArrayRepository()
     private val initialData = listOf(8, 3, 5, 4, 7, 1, 6, 2)
     private var startTime: Long = 0
     private var timerJob: Job? = null
@@ -43,6 +45,27 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
     val state: StateFlow<SortingState> = _state.asStateFlow()
 
     private var sortingJob: Job? = null
+
+    init {
+        loadRandomArray()
+    }
+
+    private fun loadRandomArray() {
+        viewModelScope.launch {
+            try {
+                repository.getRandomArray().fold(
+                    onSuccess = { arrayData ->
+                        _state.update { it.copy(data = arrayData.numbers) }
+                    },
+                    onFailure = { 
+                        _state.update { it.copy(data = initialData) }
+                    }
+                )
+            } catch (e: Exception) {
+                _state.update { it.copy(data = initialData) }
+            }
+        }
+    }
 
     fun onEvent(event: SortingEvent) {
         when (event) {
@@ -81,6 +104,9 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     currentStepIndex--
                     applyStep(currentStepIndex)
                 }
+            }
+            is SortingEvent.LoadNewArray -> {
+                loadRandomArray()
             }
         }
     }
@@ -181,16 +207,18 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
         stopSorting()
         currentStepIndex = 0
         _state.update { it.copy(
-            data = initialData,
             sortedIndices = emptySet(),
             comparisonMessage = "",
             elapsedTimeMs = 0,
             stepHistory = emptyList(),
             totalSteps = 0,
+            highlightedIndices = emptySet(),
+            isSorting = false,
             currentStep = 0,
             canStepForward = false,
-            canStepBackward = false
+            canStepBackward = false,
         )}
+        loadRandomArray()
     }
 
     override fun onCleared() {

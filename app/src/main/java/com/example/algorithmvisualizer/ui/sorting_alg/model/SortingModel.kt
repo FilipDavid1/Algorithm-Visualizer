@@ -49,4 +49,5 @@ sealed class SortingEvent {
     object ToggleStepMode : SortingEvent()
     object StepForward : SortingEvent()
     object StepBackward : SortingEvent()
+    object LoadNewArray : SortingEvent()
 }
