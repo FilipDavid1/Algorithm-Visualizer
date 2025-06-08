@@ -217,7 +217,7 @@ class SearchingListViewModel(application: Application) : AndroidViewModel(applic
                         isSearching = false,
                         currentStep = 0,
                         canStepForward = true,
-                        comparisonMessage = stringResource(R.string.step_mode_ready)
+                        comparisonMessage = getApplication<Application>().getString(R.string.step_mode_ready)
                     )}
                     return
                 } else {
@@ -243,7 +243,7 @@ class SearchingListViewModel(application: Application) : AndroidViewModel(applic
                 isSearching = false,
                 currentStep = 0,
                 canStepForward = true,
-                comparisonMessage = stringResource(R.string.step_mode_ready)
+                comparisonMessage = getApplication<Application>().getString(R.string.step_mode_ready)
             )}
         } else {
             timerJob?.cancel()
@@ -254,9 +254,6 @@ class SearchingListViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    private fun stringResource(id: Int): String {
-        return getApplication<Application>().getString(id)
-    }
 
     private suspend fun binarySearch() {
         val targetValue = state.value.targetValue ?: return
