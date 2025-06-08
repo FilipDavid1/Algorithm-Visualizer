@@ -163,7 +163,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 _state.update { it.copy(
                     elapsedTimeMs = System.currentTimeMillis() - startTime
                 )}
-                delay(16) // Update approximately 60 times per second
+                delay(16)
             }
         }
 
