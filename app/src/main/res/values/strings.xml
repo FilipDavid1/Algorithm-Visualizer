@@ -123,4 +123,7 @@
     <string name="step_completed">Step completed</string>
     <string name="step_started">Step started</string>
     <string name="step_mode_ready">Steps collected. Use arrows to navigate.</string>
+
+    <!-- Arrays Section -->
+    <string name="arrays_title">Add custom array</string>
 </resources>

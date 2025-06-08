@@ -87,6 +87,61 @@ fun HomeScreen(
             iconOnRight = true,
             icon = Icons.Default.Search,
         ) { navController.navigate(Routes.SEARCHING) }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AddCustomArrayCard(
+            onClick = { navController.navigate(Routes.ADD_ARRAY) }
+        )
+    }
+}
+
+@Composable
+fun AddCustomArrayCard(
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = BlueContainer,
+            contentColor = WhiteText
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Add Custom Array",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = WhiteText,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Button(
+                onClick = onClick,
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = YellowContainer,
+                    contentColor = WhiteText
+                ),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 4.dp
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Add Array",
+                    style = MaterialTheme.typography.labelLarge,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 

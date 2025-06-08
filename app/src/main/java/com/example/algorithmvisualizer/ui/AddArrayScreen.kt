@@ -1,0 +1,244 @@
+package com.example.algorithmvisualizer.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.algorithmvisualizer.ui.theme.*
+import kotlin.random.Random
+
+@Composable
+fun AddArrayScreen(
+    onNavigateBack: () -> Unit = {},
+    viewModel: ArraysViewModel = viewModel()
+) {
+    var arraySize by remember { mutableStateOf("10") }
+    var numbers by remember { mutableStateOf(List(10) { Random.nextInt(1, 100) }) }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val errorColor = Color(0xFFFF6B6B)
+
+    fun validateAndUpdateSize(newSize: String) {
+        arraySize = newSize
+        val size = newSize.toIntOrNull()
+        when {
+            size == null -> {
+                showError = true
+                errorMessage = "Please enter a valid number"
+            }
+            size <= 0 -> {
+                showError = true
+                errorMessage = "Array size must be greater than 0"
+            }
+            else -> {
+                numbers = List(size) { Random.nextInt(1, 100) }
+                showError = false
+                errorMessage = ""
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+    ) {
+        // Header Card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = YellowContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onNavigateBack,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = WhiteText
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Navigate back"
+                    )
+                }
+                Text(
+                    text = "Add New Array",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = WhiteText
+                )
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+        }
+
+        // Array size input card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = BlueContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Array Size",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = WhiteText,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                OutlinedTextField(
+                    value = arraySize,
+                    onValueChange = { validateAndUpdateSize(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = YellowContainer,
+                        unfocusedBorderColor = WhiteText,
+                        focusedTextColor = WhiteText,
+                        unfocusedTextColor = WhiteText,
+                        errorBorderColor = errorColor,
+                        errorTextColor = errorColor
+                    ),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Number
+                    ),
+                    isError = showError
+                )
+                if (showError) {
+                    Text(
+                        text = errorMessage,
+                        color = errorColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+        }
+
+        // Controls card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = CardDefaults.cardColors(containerColor = BlueContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        val size = arraySize.toIntOrNull() ?: 10
+                        if (size > 0) {
+                            numbers = List(size) { Random.nextInt(1, 100) }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = YellowContainer
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Refresh, contentDescription = "Generate new numbers")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Generate New")
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Button(
+                    onClick = {
+                        val size = arraySize.toIntOrNull()
+                        if (size != null && size > 0) {
+                            viewModel.addArray(numbers)
+                            onNavigateBack()
+                        } else {
+                            showError = true
+                            errorMessage = if (size == null) "Please enter a valid number" else "Array size must be greater than 0"
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = YellowContainer
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Save array")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Save Array")
+                }
+            }
+        }
+
+        // Array preview card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = BlueContainer),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Array Preview",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = WhiteText,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(numbers) { number ->
+                        Card(
+                            modifier = Modifier
+                                .size(48.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = YellowContainer
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = number.toString(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = WhiteText,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+} 

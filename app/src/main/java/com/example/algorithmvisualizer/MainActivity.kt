@@ -15,11 +15,13 @@ import com.example.algorithmvisualizer.ui.home.HomeScreen
 import com.example.algorithmvisualizer.ui.searching_alg.SearchingScreen
 import com.example.algorithmvisualizer.ui.sorting_alg.SortingListScreen
 import com.example.algorithmvisualizer.ui.theme.AlgorithmVisualizerTheme
+import com.example.algorithmvisualizer.ui.AddArrayScreen
 
 object Routes {
     const val HOME = "home"
     const val SORTING = "sorting"
     const val SEARCHING = "searching"
+    const val ADD_ARRAY = "add_array"
 }
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +50,11 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Routes.SEARCHING) {
                                 SearchingScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Routes.ADD_ARRAY) {
+                                AddArrayScreen(
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
