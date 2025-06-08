@@ -135,4 +135,7 @@
     <string name="generate_new">Generate new</string>
     <string name="save_array">Save array</string>
     <string name="array_preview">Array Preview</string>
+
+    <!-- Speed Control -->
+    <string name="speed_control">Speed Control</string>
 </resources>

@@ -108,6 +108,9 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
             is SortingEvent.LoadNewArray -> {
                 loadRandomArray()
             }
+            is SortingEvent.SetSpeed -> {
+                _state.update { it.copy(sortingSpeed = event.speed) }
+            }
         }
     }
 
@@ -242,7 +245,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], data[j + 1])
                 )}
                 addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
-                if (!state.value.isStepMode) delay(500)
+                if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
 
                 if (data[j] > data[j + 1]) {
                     val temp = data[j]
@@ -254,7 +257,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                         comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
                     )}
                     addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
-                    if (!state.value.isStepMode) delay(500)
+                    if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
                 }
             }
             sortedIndices.add(n - i - 1)
@@ -266,7 +269,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     getApplication<Application>().getString(R.string.sorting_completed)
             )}
             addStep(data.toList(), emptySet(), sortedIndices.toSet(), state.value.comparisonMessage)
-            if (!state.value.isStepMode) delay(500)
+            if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
             if (!swapped) break
         }
 
@@ -295,7 +298,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[minIdx], data[j])
                 )}
                 addStep(data.toList(), setOf(minIdx, j), sortedIndices.toSet(), state.value.comparisonMessage)
-                if (!state.value.isStepMode) delay(500)
+                if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
 
                 if (data[j] < data[minIdx]) {
                     minIdx = j
@@ -311,7 +314,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 comparisonMessage = getApplication<Application>().getString(R.string.moved_smallest_element, data[i], i)
             )}
             addStep(data.toList(), setOf(i, minIdx), sortedIndices.toSet(), state.value.comparisonMessage)
-            if (!state.value.isStepMode) delay(500)
+            if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
         }
         
         sortedIndices.add(n - 1)
@@ -346,7 +349,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 comparisonMessage = getApplication<Application>().getString(R.string.inserting_element, key)
             )}
             addStep(data.toList(), setOf(i), sortedIndices.toSet(), state.value.comparisonMessage)
-            if (!state.value.isStepMode) delay(500)
+            if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
 
             while (j >= 0 && data[j] > key) {
                 if (!state.value.isSorting) return
@@ -356,7 +359,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     comparisonMessage = getApplication<Application>().getString(R.string.comparing_elements, data[j], key)
                 )}
                 addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
-                if (!state.value.isStepMode) delay(500)
+                if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
 
                 val temp = data[j + 1]
                 data[j + 1] = data[j]
@@ -367,7 +370,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                     comparisonMessage = getApplication<Application>().getString(R.string.swapped_elements, data[j], data[j + 1])
                 )}
                 addStep(data.toList(), setOf(j, j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
-                if (!state.value.isStepMode) delay(500)
+                if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
                 
                 j--
             }
@@ -383,7 +386,7 @@ class SortingListViewModel(application: Application) : AndroidViewModel(applicat
                 comparisonMessage = getApplication<Application>().getString(R.string.inserted_element, key)
             )}
             addStep(data.toList(), setOf(j + 1), sortedIndices.toSet(), state.value.comparisonMessage)
-            if (!state.value.isStepMode) delay(500)
+            if (!state.value.isStepMode) delay((500L / state.value.sortingSpeed))
         }
 
         _state.update { it.copy(

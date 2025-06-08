@@ -338,6 +338,43 @@ fun SortingListScreen(
                 )
             }
 
+            // Speed Control
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.speed_control),
+                        color = BlueContainer,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "${state.sortingSpeed}x",
+                        color = BlueContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Slider(
+                    value = state.sortingSpeed.toFloat(),
+                    onValueChange = { viewModel.onEvent(SortingEvent.SetSpeed(it.toInt())) },
+                    valueRange = 1f..50f,
+                    steps = 49,
+                    colors = SliderDefaults.colors(
+                        thumbColor = WhiteText,
+                        activeTrackColor = BlueContainer,
+                        inactiveTrackColor = YellowContainer
+                    ),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             if (state.isStepMode) {

@@ -6,7 +6,7 @@ data class SortingState(
     val sortedIndices: Set<Int> = emptySet(),
     val isSorting: Boolean = false,
     val selectedAlgorithm: String = "Bubble Sort",
-    val animationSpeed: Float = 1f,
+    val sortingSpeed: Int = 1,
     val comparisonMessage: String = "",
     val elapsedTimeMs: Long = 0,
     val isStepMode: Boolean = false,
@@ -50,4 +50,5 @@ sealed class SortingEvent {
     object StepForward : SortingEvent()
     object StepBackward : SortingEvent()
     object LoadNewArray : SortingEvent()
+    data class SetSpeed(val speed: Int) : SortingEvent()
 }
