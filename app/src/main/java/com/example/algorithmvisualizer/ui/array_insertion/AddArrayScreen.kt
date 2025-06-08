@@ -202,12 +202,12 @@ fun AddArrayScreen(
                 Button(
                     onClick = {
                         val size = arraySize.toIntOrNull()
-                        if (size != null && size > 0) {
+                        if (size != null && size > 0 && size <= maxArraySize) {
                             viewModel.addArray(numbers)
                             onNavigateBack()
                         } else {
                             showError = true
-                            errorMessage = if (size == null) invalidInputMessage else arraySizeErrorMessage
+                            errorMessage = invalidInputMessage
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
